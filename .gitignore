@@ -1,0 +1,20 @@
+app/build
+
+# OSX files
+.DS_Store
+
+# Java class files
+*.class
+
+# Android Studio
+*.iml
+.idea
+#.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
+.gradle
+build/
+build.gradle
+gradlew.bat
+gradlew
+gradle/
+settings.gradle
+local.properties
