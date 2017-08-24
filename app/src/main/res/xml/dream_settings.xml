@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+    <ListPreference android:entries="@array/array_delay_names" android:title="Delay between quotes" android:key="PREF_DELAY_BETWEEN_QUOTES" android:summary="%s" android:defaultValue="60000" android:dialogTitle="Delay" android:entryValues="@array/array_delay_values" />
+    <ListPreference android:entries="@array/array_font_family_names" android:title="Text font" android:key="PREF_FONT_FAMILY" android:summary="%s" android:defaultValue="Santana" android:dialogTitle="Text font" android:entryValues="@array/array_font_family_values" />
+    <ListPreference android:entries="@array/array_text_size_names" android:title="Text size" android:key="PREF_TEXT_SIZE" android:summary="%s" android:defaultValue="0" android:dialogTitle="Text size" android:entryValues="@array/array_text_size_values" />
+
+    <SwitchPreference
+        android:key="PREF_SHOW_TIME"
+        android:title="Show time?"
+        android:summaryOff="Time will not be shown"
+        android:summaryOn="Time will be shown"
+        android:switchTextOn = "Y"
+        android:switchTextOff = "N"
+        android:defaultValue="true" />
+    <SwitchPreference
+        android:key="PREF_SHOW_DATE"
+        android:title="Show date?"
+        android:summaryOff="Date will not be shown"
+        android:summaryOn="Date will be shown"
+        android:switchTextOn = "Y"
+        android:switchTextOff = "N"
+        android:defaultValue="true" />
+</PreferenceScreen>

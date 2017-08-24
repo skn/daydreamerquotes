@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="element_spacing_normal">8.0dip</dimen>
+    <dimen name="content_padding_normal">16.0dip</dimen>
+    <dimen name="text_size_small">12.0sp</dimen>
+    <dimen name="text_size_medium">14.0sp</dimen>
+    <dimen name="text_size_large">18.0sp</dimen>
+    <dimen name="text_size_xlarge">18.0sp</dimen>
+    <dimen name="text_size_diff_large_small">6.0sp</dimen>
+</resources>

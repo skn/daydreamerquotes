@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:padding="@dimen/content_padding_normal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+  xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <RelativeLayout
+        android:id="@id/quote_content_first"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <TextView
+            android:id="@id/quote_body"
+            style="@style/QuoteBody"
+            />
+        <TextView
+            android:id="@id/quote_author"
+            android:layout_below="@id/quote_body"
+            android:layout_alignRight="@id/quote_body"
+            style="@style/QuoteAuthor"
+            />
+
+    </RelativeLayout>
+    <RelativeLayout
+        android:id="@id/quote_content_second"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true">
+        <TextView
+            android:id="@id/quote_body"
+            style="@style/QuoteBody"
+            />
+        <TextView
+            android:id="@id/quote_author"
+            android:layout_below="@id/quote_body"
+            android:layout_alignRight="@id/quote_body"
+            style="@style/QuoteAuthor"
+            />
+    </RelativeLayout>
+    <TextClock
+        android:id="@id/date"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
+        android:format24Hour="dd MMM yyyy"
+        android:format12Hour="dd MMM yyyy"
+        style="@style/Clock"/>
+    <TextClock
+        android:id="@id/time"
+        android:layout_centerHorizontal="true"
+        android:layout_above="@id/date"
+        android:format24Hour="kk : mm"
+        android:format12Hour="hh : mm a"
+        style="@style/Clock"/>
+</RelativeLayout>
