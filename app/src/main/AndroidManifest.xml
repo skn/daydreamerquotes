@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<manifest android:versionCode="17" android:versionName="2.4" package="im.skn.daydreamerquoth"
+<manifest android:versionCode="17" android:versionName="2.5" package="im.skn.daydreamerquoth"
   xmlns:android="http://schemas.android.com/apk/res/android">
   <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="19" />
     <application android:label="@string/app_title" android:icon="@drawable/ic_launcher" android:allowBackup="true">
