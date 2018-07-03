@@ -1,10 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- // change the versionCode and versionName for release. Last update 02/July/2018 // -->
-<manifest android:versionCode="20" android:versionName="2.7" package="im.skn.daydreamerquoth"
+<!-- // change the versionCode and versionName for release. Last update 03/July/2018 // -->
+<manifest android:versionCode="21" android:versionName="2.8" package="im.skn.daydreamerquoth"
   xmlns:android="http://schemas.android.com/apk/res/android">
     <!--
     //  August 2018: New apps required to target API level 26 (Android 8.0) or higher.
         November 2018: Updates to existing apps required to target API level 26 or higher.
+        Remember to also change settings in build.gradle (Module:app)
     //
     -->
   <uses-sdk android:minSdkVersion="17" android:targetSdkVersion="26" />

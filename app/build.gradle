@@ -1,0 +1,46 @@
+apply plugin: 'com.android.application'
+
+android {
+    buildToolsVersion '27.0.3'
+
+    defaultConfig {
+        minSdkVersion 17
+        targetSdkVersion 26
+        compileSdkVersion 26
+        applicationId "im.skn.daydreamerquoth"
+
+    }
+    signingConfigs {
+        release {
+            storeFile file("/Users/srijith/android/keys/im-skn-release-key.keystore")
+            keyAlias "im-skn-release"
+        }
+    }
+
+    buildTypes {
+        release {
+            signingConfig signingConfigs.release
+            minifyEnabled true
+            proguardFiles 'proguard.cfg'
+            zipAlignEnabled true
+            applicationVariants.all { variant ->
+                variant.outputs.all {
+                    outputFileName = "QuotestheDaydreamer-${variant.name}-${variant.versionName}.apk"
+                }
+            }
+        }
+    }
+    testOptions {
+        unitTests {
+            includeAndroidResources = true
+        }
+    }
+}
+
+dependencies {
+    // Support v4
+    implementation 'com.android.support:support-v4:19.0.0'
+    // Robolectric
+    testImplementation "org.robolectric:robolectric:3.7.1"
+    testImplementation 'junit:junit:4.12'
+}
