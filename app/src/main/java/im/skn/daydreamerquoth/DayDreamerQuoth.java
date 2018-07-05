@@ -20,7 +20,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Random;
 
-@TargetApi(17)
+@TargetApi(23)
 public class DayDreamerQuoth extends DreamService {
 
 
