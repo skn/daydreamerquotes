@@ -124,9 +124,12 @@ public class DayDreamerQuoth extends DreamService {
     private void setQuote() {
 
         Resources resources;
-        String s;
-        Resources resources1;
-        String s1;
+        String qline;
+        String[] qlineparts;
+        String quoteStr = "";
+        String authStr = "";
+        String finalQuoteStr;
+        String finalAuthStr;
         View toShow;
         if (animateSecond) {
             animateSecond = false;
@@ -137,10 +140,7 @@ public class DayDreamerQuoth extends DreamService {
             toShow = firstContent;
             toHide = secondContent;
         }
-        String qline;
-        String[] qlineparts;
-        String quoteStr = "";
-        String authStr = "";
+
 		try {
 			qline = randLineFromFile();
 		} catch (IOException e) {
@@ -159,11 +159,12 @@ public class DayDreamerQuoth extends DreamService {
         toShow.setAlpha(0.0F);
         toShow.setVisibility(View.VISIBLE);
         resources = getResources();
-        resources1 = getResources();
-        s = resources.getString(R.string.lbl_quote_body, quoteStr);
-        s1 = resources1.getString(R.string.lbl_quote_author, authStr);
-        ((TextView) toShow.findViewById(R.id.quote_body)).setText(s);
-        ((TextView) toShow.findViewById(R.id.quote_author)).setText(s1);
+        finalQuoteStr = resources.getString(R.string.lbl_quote_body, quoteStr);
+        finalAuthStr = resources.getString(R.string.lbl_quote_author, authStr);
+        ((TextView) toShow.findViewById(R.id.quote_body)).setText(finalQuoteStr);
+        ((TextView) toShow.findViewById(R.id.quote_body)).setTextColor(0XFFFFFFFF);
+        ((TextView) toShow.findViewById(R.id.quote_author)).setText(finalAuthStr);
+        ((TextView) toShow.findViewById(R.id.quote_author)).setTextColor(0XFFFFFFFF);
         toShow.animate().alpha(1.0F).setDuration(shortAnimationDuration).setListener(null);
         toHide.setAlpha(1.0F);
         toHide.animate().alpha(0.0F).setDuration(shortAnimationDuration).setListener(new AnimatorListenerAdapter() {
@@ -282,6 +283,7 @@ public class DayDreamerQuoth extends DreamService {
         }
         else {
             contentTimeView.setVisibility(View.VISIBLE);
+            contentTimeView.setTextColor(0XFFFFFFFF);
         }
         boolean showDate = prefs.getBoolean("PREF_SHOW_DATE", true);
         if (!showDate){
@@ -300,6 +302,7 @@ public class DayDreamerQuoth extends DreamService {
         }
         else {
             contentDateView.setVisibility(View.VISIBLE);
+            contentDateView.setTextColor(0XFFFFFFFF);
         }
 
 
