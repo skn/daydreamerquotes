@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <item type="id" name="quote_content_first">false</item>
-    <item type="id" name="quote_body">false</item>
-    <item type="id" name="quote_author">false</item>
-    <item type="id" name="quote_content_second">false</item>
-    <item type="id" name="time">false</item>
-    <item type="id" name="date">false</item>
+    <item type="id" name="quote_content_first" />
+    <item type="id" name="quote_body" />
+    <item type="id" name="quote_author" />
+    <item type="id" name="quote_content_second" />
+    <item type="id" name="time" />
+    <item type="id" name="date" />
 </resources>
