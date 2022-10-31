@@ -6,9 +6,9 @@ android {
     //  August 2018: New apps required to target API level 26 (Android 8.0) or higher.
     //  November 2018: Updates to existing apps required to target API level 26 or higher.
     defaultConfig {
-        minSdkVersion 17
+        minSdkVersion 31
         targetSdkVersion 31
-        compileSdkVersion 26
+        compileSdkVersion 31
         applicationId "im.skn.daydreamerquoth"
 
     }
@@ -43,6 +43,7 @@ dependencies {
     // Support v4
     implementation 'com.android.support:support-v4:19.0.0'
     // Robolectric
-    testImplementation "org.robolectric:robolectric:3.7.1"
+    testImplementation "org.robolectric:robolectric:4.7.3"
     testImplementation 'junit:junit:4.12'
+    implementation 'androidx.preference:preference:1.1.1'
 }
