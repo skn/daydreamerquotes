@@ -1,10 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    //buildToolsVersion '28.0.3'
-
-    //  August 2018: New apps required to target API level 26 (Android 8.0) or higher.
-    //  November 2018: Updates to existing apps required to target API level 26 or higher.
+    //  Oct 2022: New apps required to target API level 31
     defaultConfig {
         minSdkVersion 31
         targetSdkVersion 31
