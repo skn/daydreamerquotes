@@ -2,25 +2,23 @@ package im.skn.daydreamerquoth;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.graphics.Typeface;
 import android.os.Handler;
+import android.os.Looper;
 import android.service.dreams.DreamService;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.util.Random;
 
-@TargetApi(23)
 public class DayDreamerQuoth extends DreamService {
 
 
@@ -56,7 +54,7 @@ public class DayDreamerQuoth extends DreamService {
 
     public DayDreamerQuoth() {
     	super();
-        handler = new Handler();
+        handler = new Handler(Looper.getMainLooper());
         delay = DEFAULT_DELAY;
         animateSecond = false;
         showQuoteRunnable = new Runnable() {
