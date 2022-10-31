@@ -17,7 +17,7 @@
             <meta-data android:name="android.service.dream" android:resource="@xml/dream" />
         </service>
         <activity android:name="im.skn.daydreamerquoth.QuothPrefs" />
-        <activity android:label="@string/app_title" android:name="QuothActivity">
+        <activity android:label="@string/app_title" android:name="QuothActivity" android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
