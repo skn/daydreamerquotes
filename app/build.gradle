@@ -44,4 +44,5 @@ dependencies {
     testImplementation "org.robolectric:robolectric:4.7.3"
     testImplementation 'junit:junit:4.12'
     implementation 'androidx.preference:preference:1.1.1'
+    implementation 'androidx.test:core:1.4.0'
 }

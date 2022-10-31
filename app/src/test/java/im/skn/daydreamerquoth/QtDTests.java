@@ -11,9 +11,7 @@ import java.util.Set;
 import java.util.HashSet;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-
 import org.robolectric.shadows.ShadowLog;
-import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
 public class QtDTests {
@@ -27,8 +25,8 @@ public class QtDTests {
     public void checkDuplicatesAndFormat() throws Exception {
         String reality;
         final String expected = "UNIQUE";
-        int quotesFileID = RuntimeEnvironment.application.getResources().getIdentifier("quotes", "raw", RuntimeEnvironment.application.getPackageName());
-        InputStream ts = RuntimeEnvironment.application.getResources().openRawResource(quotesFileID);
+        int quotesFileID = androidx.test.core.app.ApplicationProvider.getApplicationContext().getResources().getIdentifier("quotes", "raw", androidx.test.core.app.ApplicationProvider.getApplicationContext().getPackageName());
+        InputStream ts = androidx.test.core.app.ApplicationProvider.getApplicationContext().getResources().openRawResource(quotesFileID);
         BufferedReader list = new BufferedReader(new InputStreamReader(ts, "UTF-8"));
         String line;
         boolean hasDuplicate = false;
