@@ -1,12 +1,10 @@
 package im.skn.daydreamerquoth;
 
-import android.test.ActivityTestCase;
-
 import org.junit.Before;
 import org.junit.Test;
+import static org.junit.Assert.*;
 import org.junit.runner.RunWith;
 import org.robolectric.RobolectricTestRunner;
-import org.robolectric.annotation.Config;
 import java.lang.String;
 import java.io.BufferedReader;
 import java.util.Set;
@@ -18,8 +16,7 @@ import org.robolectric.shadows.ShadowLog;
 import org.robolectric.RuntimeEnvironment;
 
 @RunWith(RobolectricTestRunner.class)
-@Config(constants = BuildConfig.class)
-public class QtDTests extends ActivityTestCase {
+public class QtDTests {
 
     @Before
     public void setUp() {
