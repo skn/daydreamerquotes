@@ -15,6 +15,6 @@ build/
 build.gradle
 gradlew.bat
 gradlew
-gradle/
+gradle/wrapper/gradle-wrapper.jar
 settings.gradle
 local.properties
