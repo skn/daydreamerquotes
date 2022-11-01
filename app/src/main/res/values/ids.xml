@@ -6,4 +6,6 @@
     <item type="id" name="quote_content_second" />
     <item type="id" name="time" />
     <item type="id" name="date" />
+    <item type="id" name="batteryPct" />
+    <item type="id" name="batteryStatus" />
 </resources>

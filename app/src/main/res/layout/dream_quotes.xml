@@ -54,4 +54,20 @@
         android:format24Hour="kk : mm"
         android:format12Hour="hh : mm a"
         style="@style/Clock"/>
+    <TextView
+        android:id="@id/batteryPct"
+        android:paddingBottom="6sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        style="@style/BatteryPct"/>
+    <TextView
+        android:id="@id/batteryStatus"
+        android:paddingBottom="6sp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        style="@style/BatteryStatus"/>
 </RelativeLayout>

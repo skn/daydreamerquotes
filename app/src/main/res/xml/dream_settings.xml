@@ -21,4 +21,20 @@
         android:switchTextOn = "Y"
         android:switchTextOff = "N"
         android:defaultValue="true" />
+    <SwitchPreference
+        android:key="PREF_SHOW_BATTERY_PCT"
+        android:title="Show battery %?"
+        android:summaryOff="Battery % will not be shown"
+        android:summaryOn="Battery % will be shown"
+        android:switchTextOn = "Y"
+        android:switchTextOff = "N"
+        android:defaultValue="true" />
+    <SwitchPreference
+        android:key="PREF_SHOW_BATTERY_STATUS"
+        android:title="Show battery status?"
+        android:summaryOff="Battery status will not be shown"
+        android:summaryOn="Battery status will be shown"
+        android:switchTextOn = "Y"
+        android:switchTextOff = "N"
+        android:defaultValue="true" />
 </PreferenceScreen>
