@@ -33,7 +33,7 @@ public class QtDTests {
         Set<String> lines = new HashSet<String>();
         int lineNumber=0;
         // https://regex101.com/r/uZ4uG1/4
-        String pattern= "[a-zA-Z\\s\\()\\[\\]_,.;*:?\\/=+'0-9%!]*[a-z\\-a-z]*[a-zA-Z\\s,.'0-9%!#]* -- [\\/a-zA-Z0-9_\\-\\s(\\,\\.']*[a-z\\-A-Z0-9\\.\\_\\s]*[^\\s]$";
+        String pattern= "[a-zA-Z\\s\\()\\[\\]_,.;*:?\\/=+'’0-9%!]*[a-z\\-a-z]*[a-zA-Z\\s,.'0-9%!#]* -- [\\/a-zA-Z0-9_\\-\\s(\\,\\.']*[a-z\\-A-Z0-9\\.\\_\\s]*[^\\s]$";
         while ( (line = list.readLine()) != null && !hasDuplicate )
         {
             lineNumber ++;
