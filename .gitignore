@@ -1,5 +1,5 @@
 app/build
-
+app/release
 # OSX files
 .DS_Store
 
