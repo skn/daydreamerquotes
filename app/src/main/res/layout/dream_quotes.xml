@@ -56,18 +56,18 @@
         style="@style/Clock"/>
     <TextView
         android:id="@id/batteryPct"
-        android:paddingBottom="6sp"
+        android:paddingBottom="0sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         style="@style/BatteryPct"/>
-    <TextView
+    <ImageView
         android:id="@id/batteryStatus"
-        android:paddingBottom="6sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:paddingBottom="8sp"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         style="@style/BatteryStatus"/>
 </RelativeLayout>

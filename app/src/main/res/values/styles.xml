@@ -20,11 +20,11 @@
     </style>
 
     <style name="BatteryPct">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:alpha">0.5</item>item>
     </style>
     <style name="BatteryStatus">
-        <item name="android:textSize">16sp</item>
+        <item name="android:textSize">18sp</item>
         <item name="android:alpha">0.5</item>item>
     </style>
 </resources>

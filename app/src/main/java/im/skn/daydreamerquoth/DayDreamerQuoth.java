@@ -14,6 +14,7 @@ import android.os.Looper;
 import android.service.dreams.DreamService;
 import android.text.TextUtils;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import java.io.BufferedReader;
@@ -44,7 +45,6 @@ public class DayDreamerQuoth extends DreamService {
     private static final String DEFAULT_LIGHT_TYPEFACE = "fonts/Santana.ttf";
 
     private static final String NO_FILE_ERR_MSG = "Could not find the embedded quotes file. Spit it out, the one who ate it! -- Daydreamer";
-    private static final String NO_BATTERYPCT_MSG = "~00~";
     private boolean animateSecond;
     private long delay;
     private View firstContent;
@@ -170,28 +170,28 @@ public class DayDreamerQuoth extends DreamService {
         int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
         String chargingState = "";
         if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-            chargingState = "charging";
+            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_charging);
         }
         else if (status == BatteryManager.BATTERY_STATUS_FULL) {
-            chargingState = "charged";
+            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_full);
         }
         else {
-            chargingState = "not charging";
+            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_not_charging);
         }
         boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
 
         // How are we charging?
-        int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-        boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
-        boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
+        //int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
+        //boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
+        //boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
 
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         float batteryPctFloat = level * 100 / (float)scale;
         int batteryPct = (int) batteryPctFloat;
 
-        ((TextView) findViewById(R.id.batteryStatus)).setText(chargingState);
         ((TextView) findViewById(R.id.batteryPct)).setText(Integer.toString(batteryPct)+"%");
+
         ((TextView) toShow.findViewById(R.id.quote_body)).setText(finalQuoteStr);
         ((TextView) toShow.findViewById(R.id.quote_body)).setTextColor(0XFFFFFFFF);
         ((TextView) toShow.findViewById(R.id.quote_author)).setText(finalAuthStr);
@@ -236,7 +236,7 @@ public class DayDreamerQuoth extends DreamService {
         TextView contentTimeView;
         TextView contentDateView;
         TextView contentBatteryPctView;
-        TextView contentBatteryStatusView;
+        ImageView contentBatteryStatusView;
 
 
         if (!TextUtils.isEmpty(font_family)) {
@@ -313,8 +313,8 @@ public class DayDreamerQuoth extends DreamService {
         contentBatteryPctView = (TextView)findViewById(R.id.batteryPct);
         contentBatteryPctView.setTypeface(regularTypeface);
 
-        contentBatteryStatusView = (TextView)findViewById(R.id.batteryStatus);
-        contentBatteryStatusView.setTypeface(regularTypeface);
+        contentBatteryStatusView = (ImageView)findViewById(R.id.batteryStatus);
+        //contentBatteryStatusView.setTypeface(regularTypeface);
 
         boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
         if (!showTime){
@@ -359,7 +359,7 @@ public class DayDreamerQuoth extends DreamService {
         }
         else {
             contentBatteryStatusView.setVisibility(View.VISIBLE);
-            contentBatteryStatusView.setTextColor(0XFFFFFFFF);
+            //contentBatteryStatusView.setTextColor(0XFFFFFFFF);
         }
 
         shortAnimationDuration = DEFAULT_SWITCH_ANIM_DURATION;
