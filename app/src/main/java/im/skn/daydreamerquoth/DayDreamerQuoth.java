@@ -2,6 +2,7 @@ package im.skn.daydreamerquoth;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -55,6 +56,7 @@ public class DayDreamerQuoth extends DreamService {
     private View toHide;
     private Context ctx;
     private int numberOfQuotes;
+    BroadcastReceiver mBatteryLevelReceiver = new mBatteryLevelReceiver();
 
     public DayDreamerQuoth() {
     	super();
@@ -184,7 +186,7 @@ public class DayDreamerQuoth extends DreamService {
         //int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
         //boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
         //boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
-
+        batteryLevel();
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         float batteryPctFloat = level * 100 / (float)scale;
@@ -206,6 +208,37 @@ public class DayDreamerQuoth extends DreamService {
         	}
         });
     }
+
+    private void batteryLevel() {
+        IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+        registerReceiver(mBatteryLevelReceiver, batteryLevelFilter);
+    }
+
+    public class mBatteryLevelReceiver extends BroadcastReceiver {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            float batteryPctFloat = level * 100 / (float)scale;
+            int batteryPct = (int) batteryPctFloat;
+            ((TextView) findViewById(R.id.batteryPct)).setText(Integer.toString(batteryPct)+"%");
+
+            IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
+            Intent batteryStatus = registerReceiver(null, ifilter);
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            String chargingState = "";
+            if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_charging);
+            }
+            else if (status == BatteryManager.BATTERY_STATUS_FULL) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_full);
+            }
+            else {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_not_charging);
+            }
+        }
+
+    };
     
     private void showQuote() {
         setQuote();
@@ -314,7 +347,6 @@ public class DayDreamerQuoth extends DreamService {
         contentBatteryPctView.setTypeface(regularTypeface);
 
         contentBatteryStatusView = (ImageView)findViewById(R.id.batteryStatus);
-        //contentBatteryStatusView.setTypeface(regularTypeface);
 
         boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
         if (!showTime){
@@ -359,7 +391,6 @@ public class DayDreamerQuoth extends DreamService {
         }
         else {
             contentBatteryStatusView.setVisibility(View.VISIBLE);
-            //contentBatteryStatusView.setTextColor(0XFFFFFFFF);
         }
 
         shortAnimationDuration = DEFAULT_SWITCH_ANIM_DURATION;
@@ -369,5 +400,6 @@ public class DayDreamerQuoth extends DreamService {
     public void onDetachedFromWindow() {
         super.onDetachedFromWindow();
         handler.removeCallbacks(showQuoteRunnable);
+        this.unregisterReceiver(mBatteryLevelReceiver);
     }
 }
