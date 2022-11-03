@@ -49,10 +49,10 @@ public class DayDreamerQuoth extends DreamService {
     private boolean animateSecond;
     private long delay;
     private View firstContent;
-    private Handler handler;
+    private final Handler handler;
     private View secondContent;
     private int shortAnimationDuration;
-    private Runnable showQuoteRunnable;
+    private final Runnable showQuoteRunnable;
     private View toHide;
     private Context ctx;
     private int numberOfQuotes;
@@ -170,29 +170,14 @@ public class DayDreamerQuoth extends DreamService {
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
         int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-        String chargingState = "";
-        if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_charging);
-        }
-        else if (status == BatteryManager.BATTERY_STATUS_FULL) {
-            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_full);
-        }
-        else {
-            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_not_charging);
-        }
-        boolean isCharging = status == BatteryManager.BATTERY_STATUS_CHARGING || status == BatteryManager.BATTERY_STATUS_FULL;
 
-        // How are we charging?
-        //int chargePlug = batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1);
-        //boolean usbCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_USB;
-        //boolean acCharge = chargePlug == BatteryManager.BATTERY_PLUGGED_AC;
-        batteryLevel();
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        float batteryPctFloat = level * 100 / (float)scale;
-        int batteryPct = (int) batteryPctFloat;
+        int batteryPct = level * 100 / scale;
 
-        ((TextView) findViewById(R.id.batteryPct)).setText(Integer.toString(batteryPct)+"%");
+        setBatteryDetails(status, batteryPct);
+
+        batteryLevelRcvr();
 
         ((TextView) toShow.findViewById(R.id.quote_body)).setText(finalQuoteStr);
         ((TextView) toShow.findViewById(R.id.quote_body)).setTextColor(0XFFFFFFFF);
@@ -209,7 +194,7 @@ public class DayDreamerQuoth extends DreamService {
         });
     }
 
-    private void batteryLevel() {
+    private void batteryLevelRcvr() {
         IntentFilter batteryLevelFilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         registerReceiver(mBatteryLevelReceiver, batteryLevelFilter);
     }
@@ -219,27 +204,73 @@ public class DayDreamerQuoth extends DreamService {
         public void onReceive(Context context, Intent intent) {
             int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            float batteryPctFloat = level * 100 / (float)scale;
-            int batteryPct = (int) batteryPctFloat;
-            ((TextView) findViewById(R.id.batteryPct)).setText(Integer.toString(batteryPct)+"%");
+            int batteryPct = level * 100 / scale;
 
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = registerReceiver(null, ifilter);
             int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-            String chargingState = "";
-            if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
-                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_charging);
-            }
-            else if (status == BatteryManager.BATTERY_STATUS_FULL) {
-                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_full);
-            }
-            else {
-                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.battery_not_charging);
-            }
+
+            setBatteryDetails(status, batteryPct);
         }
 
     };
-    
+
+    private void setBatteryDetails(int status, int batteryPct) {
+        ((TextView) findViewById(R.id.batteryPct)).setText(Integer.toString(batteryPct)+"%");
+        if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
+            if (batteryPct <= 20) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_20);
+            }
+            else if (batteryPct <= 30) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_30);
+            }
+            else if (batteryPct <= 50) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_50);
+            }
+            else if (batteryPct <= 60) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_60);
+            }
+            else if (batteryPct <= 80) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_80);
+            }
+            else if (batteryPct <= 90) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_90);
+            }
+            else {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_full);
+            }
+        }
+        else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING || status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
+            if (batteryPct <= 20) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_20);
+            }
+            else if (batteryPct <= 30) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_30);
+            }
+            else if (batteryPct <= 50) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_50);
+            }
+            else if (batteryPct <= 60) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_60);
+            }
+            else if (batteryPct <= 80) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_80);
+            }
+            else if (batteryPct <= 90) {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_90);
+            }
+            else {
+                ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_full);
+            }
+        }
+        else if (status == BatteryManager.BATTERY_STATUS_FULL) {
+            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_full);
+        }
+        else if (status == BatteryManager.BATTERY_STATUS_UNKNOWN) {
+            ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_unknown);
+        }
+    }
+
     private void showQuote() {
         setQuote();
         long l = delay;

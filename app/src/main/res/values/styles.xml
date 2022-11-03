@@ -25,6 +25,6 @@
     </style>
     <style name="BatteryStatus">
         <item name="android:textSize">18sp</item>
-        <item name="android:alpha">0.5</item>item>
+        <item name="android:alpha">0.6</item>item>
     </style>
 </resources>
