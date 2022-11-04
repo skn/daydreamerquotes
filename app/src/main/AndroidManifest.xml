@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- // change the versionCode and versionName for release. Last update 03/January/2019 // -->
-<manifest android:versionCode="31" android:versionName="3.0.4"
+<manifest android:versionCode="32" android:versionName="3.0.4"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application android:label="@string/app_title" android:icon="@drawable/ic_launcher" android:allowBackup="true">
@@ -23,6 +23,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <!--do not add in manifest. use code to set receiver
         <receiver android:name=".DayDreamerQuoth$mBatteryLevelReceiver"
             android:exported="true">
             <intent-filter>
@@ -30,6 +31,6 @@
                 <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
                 <action android:name="android.intent.action.ACTION_BATTERY_CHANGED"/>
             </intent-filter>
-        </receiver>
+        </receiver>-->
     </application>
 </manifest>
