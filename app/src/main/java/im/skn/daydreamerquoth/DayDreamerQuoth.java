@@ -40,7 +40,7 @@ public class DayDreamerQuoth extends DreamService {
 
     private static final long DEFAULT_DELAY = 60000L;
     private static final int DEFAULT_SWITCH_ANIM_DURATION = 2000;
-    private static final int DEFAULT_BODY_TEXT_SZIE = TEXT_SIZE_BODY_SMALL;
+    private static final int DEFAULT_BODY_TEXT_SIZE = TEXT_SIZE_BODY_SMALL;
     private static final int DEFAULT_AUTH_TEXT_SIZE = TEXT_SIZE_AUTHOR_SMALL;
     private static final String DEFAULT_REGULAR_TYPEFACE = "fonts/Santana-Bold.ttf";
     private static final String DEFAULT_LIGHT_TYPEFACE = "fonts/Santana.ttf";
@@ -54,6 +54,7 @@ public class DayDreamerQuoth extends DreamService {
     private int shortAnimationDuration;
     private final Runnable showQuoteRunnable;
     private View toHide;
+    private View toShow;
     private Context ctx;
     private int numberOfQuotes;
     BroadcastReceiver mBatteryLevelReceiver = new mBatteryLevelReceiver();
@@ -134,7 +135,7 @@ public class DayDreamerQuoth extends DreamService {
         String authStr = "";
         String finalQuoteStr;
         String finalAuthStr;
-        View toShow;
+        //View toShow;
         if (animateSecond) {
             animateSecond = false;
             toShow = secondContent;
@@ -159,9 +160,7 @@ public class DayDreamerQuoth extends DreamService {
 			System.err.println("ArrayIndexOutOfBoundsException: " + e.getMessage());
 			System.err.println("Line: " + qline);
 		}
-		
-        toShow.setAlpha(0.0F);
-        toShow.setVisibility(View.VISIBLE);
+
         resources = getResources();
         finalQuoteStr = resources.getString(R.string.lbl_quote_body, quoteStr);
         finalAuthStr = resources.getString(R.string.lbl_quote_author, authStr);
@@ -180,18 +179,39 @@ public class DayDreamerQuoth extends DreamService {
         batteryLevelRcvr();
 
         ((TextView) toShow.findViewById(R.id.quote_body)).setText(finalQuoteStr);
-        ((TextView) toShow.findViewById(R.id.quote_body)).setTextColor(0XFFFFFFFF);
+        //((TextView) toShow.findViewById(R.id.quote_body)).setTextColor(0XFFFFFFFF);
         ((TextView) toShow.findViewById(R.id.quote_author)).setText(finalAuthStr);
-        ((TextView) toShow.findViewById(R.id.quote_author)).setTextColor(0XFFFFFFFF);
-        toShow.animate().alpha(1.0F).setDuration(shortAnimationDuration).setListener(null);
-        toHide.setAlpha(1.0F);
-        toHide.animate().alpha(0.0F).setDuration(shortAnimationDuration).setListener(new AnimatorListenerAdapter() {
-        	public void onAnimationEnd(Animator animator) {
-                toHide.setVisibility(View.GONE);
-                    toHide.setAlpha(1f);
-        		toHide.animate().setListener(null);
-        	}
-        });
+        //((TextView) toShow.findViewById(R.id.quote_author)).setTextColor(0XFFFFFFFF);
+
+        //https://developer.android.com/develop/ui/views/animations/reveal-or-hide-view#CrossfadeViews
+        // Initially hide the toShow view.
+        toShow.setVisibility(View.GONE);
+        // Set the toShow view to 0% opacity but visible, so that it is visible
+        // (but fully transparent) during the animation.
+        toShow.setAlpha(0.0F);
+        toShow.setVisibility(View.VISIBLE);
+        // Animate the toShow view to 100% opacity, and clear any animation
+        // listener set on the view.
+        toShow.animate()
+                .alpha(1.0F)
+                .setDuration(shortAnimationDuration)
+                .setListener(null);
+        //toHide.setAlpha(1.0F);
+
+        // Animate the toHide view to 0% opacity. After the animation ends,
+        // set its visibility to GONE as an optimization step (it won't
+        // participate in layout passes, etc.)
+        toHide.animate()
+                .alpha(0.0F)
+                .setDuration(shortAnimationDuration)
+                .setListener(new AnimatorListenerAdapter() {
+                    @Override
+        	        public void onAnimationEnd(Animator animator) {
+                        toHide.setVisibility(View.GONE);
+                        //toHide.setAlpha(1f);
+        		        //toHide.animate().setListener(null);
+        	        }
+                });
     }
 
     private void batteryLevelRcvr() {
@@ -285,7 +305,7 @@ public class DayDreamerQuoth extends DreamService {
         setContentView(R.layout.dream_quotes);
         Typeface regularTypeface = Typeface.createFromAsset(getAssets(), DEFAULT_REGULAR_TYPEFACE);
         Typeface lightTypeface = Typeface.createFromAsset(getAssets(), DEFAULT_LIGHT_TYPEFACE);
-        int quote_text_size = DEFAULT_BODY_TEXT_SZIE;
+        int quote_text_size = DEFAULT_BODY_TEXT_SIZE;
         int author_text_size = DEFAULT_AUTH_TEXT_SIZE;
         SharedPreferences prefs = QuothPrefs.get(this);
         String delay_txt = prefs.getString("PREF_DELAY_BETWEEN_QUOTES", null);
