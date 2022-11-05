@@ -135,7 +135,7 @@ public class DayDreamerQuoth extends DreamService {
         String authStr = "";
         String finalQuoteStr;
         String finalAuthStr;
-        //View toShow;
+
         if (animateSecond) {
             animateSecond = false;
             toShow = secondContent;
@@ -179,9 +179,7 @@ public class DayDreamerQuoth extends DreamService {
         batteryLevelRcvr();
 
         ((TextView) toShow.findViewById(R.id.quote_body)).setText(finalQuoteStr);
-        //((TextView) toShow.findViewById(R.id.quote_body)).setTextColor(0XFFFFFFFF);
         ((TextView) toShow.findViewById(R.id.quote_author)).setText(finalAuthStr);
-        //((TextView) toShow.findViewById(R.id.quote_author)).setTextColor(0XFFFFFFFF);
 
         //https://developer.android.com/develop/ui/views/animations/reveal-or-hide-view#CrossfadeViews
         // Initially hide the toShow view.
@@ -196,7 +194,6 @@ public class DayDreamerQuoth extends DreamService {
                 .alpha(1.0F)
                 .setDuration(shortAnimationDuration)
                 .setListener(null);
-        //toHide.setAlpha(1.0F);
 
         // Animate the toHide view to 0% opacity. After the animation ends,
         // set its visibility to GONE as an optimization step (it won't
@@ -208,8 +205,6 @@ public class DayDreamerQuoth extends DreamService {
                     @Override
         	        public void onAnimationEnd(Animator animator) {
                         toHide.setVisibility(View.GONE);
-                        //toHide.setAlpha(1f);
-        		        //toHide.animate().setListener(null);
         	        }
                 });
     }
@@ -232,7 +227,6 @@ public class DayDreamerQuoth extends DreamService {
 
             setBatteryDetails(status, batteryPct);
         }
-
     };
 
     private void setBatteryDetails(int status, int batteryPct) {
