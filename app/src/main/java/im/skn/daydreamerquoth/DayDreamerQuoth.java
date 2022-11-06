@@ -192,6 +192,7 @@ public class DayDreamerQuoth extends DreamService {
                 .setListener(new AnimatorListenerAdapter() {
                     @Override
         	        public void onAnimationEnd(Animator animator) {
+                        super.onAnimationEnd(animator);
                         toHide.setVisibility(View.GONE);
         	        }
                 });
