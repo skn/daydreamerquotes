@@ -386,11 +386,8 @@ public class DayDreamerQuoth extends DreamService {
         contentBatteryPctView.setTypeface(regularTypeface);
 
         contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
-        batteryStatusView = (ImageView)contentBatteryStatusView.findViewById(R.id.batteryStatus);
-        chargeTypeView = (TextView)contentBatteryStatusView.findViewById(R.id.batteryChrgType);
+        chargeTypeView = contentBatteryStatusView.findViewById(R.id.batteryChrgType);
         chargeTypeView.setTypeface(regularTypeface);
-        //chargeTypeView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
-
 
         boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
         if (!showTime){
