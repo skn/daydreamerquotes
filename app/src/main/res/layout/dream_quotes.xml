@@ -6,17 +6,17 @@
   xmlns:android="http://schemas.android.com/apk/res/android">
 
     <RelativeLayout
-        android:id="@id/quote_content_first"
+        android:id="@+id/quote_content_first"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
         <TextView
-            android:id="@id/quote_body"
+            android:id="@+id/quote_body"
             style="@style/QuoteBody"
             />
         <TextView
-            android:id="@id/quote_author"
+            android:id="@+id/quote_author"
             android:layout_below="@id/quote_body"
             android:layout_alignRight="@id/quote_body"
             style="@style/QuoteAuthor"
@@ -24,38 +24,38 @@
 
     </RelativeLayout>
     <RelativeLayout
-        android:id="@id/quote_content_second"
+        android:id="@+id/quote_content_second"
         android:visibility="gone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
         <TextView
-            android:id="@id/quote_body"
+            android:id="@+id/quote_body"
             style="@style/QuoteBody"
             />
         <TextView
-            android:id="@id/quote_author"
+            android:id="@+id/quote_author"
             android:layout_below="@id/quote_body"
             android:layout_alignRight="@id/quote_body"
             style="@style/QuoteAuthor"
             />
     </RelativeLayout>
     <TextClock
-        android:id="@id/date"
+        android:id="@+id/date"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
         android:format24Hour="dd MMM yyyy"
         android:format12Hour="dd MMM yyyy"
         style="@style/Clock"/>
     <TextClock
-        android:id="@id/time"
+        android:id="@+id/time"
         android:layout_centerHorizontal="true"
         android:layout_above="@id/date"
         android:format24Hour="kk : mm"
         android:format12Hour="hh : mm a"
         style="@style/Clock"/>
     <TextView
-        android:id="@id/batteryPct"
+        android:id="@+id/batteryPct"
         android:paddingBottom="0sp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -64,7 +64,7 @@
         style="@style/BatteryPct"/>
 
     <RelativeLayout
-        android:id="@id/batteryStatus_content"
+        android:id="@+id/batteryStatus_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentLeft="true"
@@ -74,7 +74,7 @@
         tools:visibility="visible">
 
         <ImageView
-            android:id="@id/batteryStatus"
+            android:id="@+id/batteryStatus"
             style="@style/BatteryStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -84,7 +84,7 @@
             tools:visibility="visible" />
 
         <TextView
-            android:id="@id/batteryChrgType"
+            android:id="@+id/batteryChrgType"
             style="@style/batteryChrgType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
