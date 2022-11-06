@@ -31,9 +31,11 @@ public class DayDreamerQuoth extends DreamService {
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
     private static final int TEXT_SIZE_AUTHOR_SMALL = 24;
+    private static final int TEXT_SIZE_AUTHOR_TINY = 18;
     private static final int TEXT_SIZE_BODY_LARGE = 38;
     private static final int TEXT_SIZE_BODY_MEDIUM = 33;
     private static final int TEXT_SIZE_BODY_SMALL = 28;
+    private static final int TEXT_SIZE_BODY_TINY = 22;
     private static final int TEXT_SIZE_DIFF_AUTH_TIME = 1;
 
     private static final long DEFAULT_DELAY = 60000L;
@@ -244,13 +246,13 @@ public class DayDreamerQuoth extends DreamService {
                 }
                 switch (batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)) {
                     case BatteryManager.BATTERY_PLUGGED_AC:
-                        batteryChrgTypeTextView.setText("A");
+                        batteryChrgTypeTextView.setText("a");
                         break;
                     case BatteryManager.BATTERY_PLUGGED_USB:
-                        batteryChrgTypeTextView.setText("U");
+                        batteryChrgTypeTextView.setText("u");
                         break;
                     case BatteryManager.BATTERY_PLUGGED_WIRELESS:
-                        batteryChrgTypeTextView.setText("W");
+                        batteryChrgTypeTextView.setText("w");
                         break;
                 }
             } else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING || status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
@@ -327,17 +329,26 @@ public class DayDreamerQuoth extends DreamService {
             	regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
                 lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Light.ttf");
             }
+            else
+            if ("Typewriter".equals(font_family)) {
+                regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaAEG.ttf");
+                lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaRoyalLight.ttf");
+            }
         }
         if (!TextUtils.isEmpty(txt_size)) {
             if ("0".equals(txt_size)) {
+                quote_text_size = TEXT_SIZE_BODY_TINY;
+                author_text_size = TEXT_SIZE_AUTHOR_TINY;
+            } else
+            if ("1".equals(txt_size)) {
                 quote_text_size = TEXT_SIZE_BODY_SMALL;
                 author_text_size = TEXT_SIZE_AUTHOR_SMALL;
             } else
-            if ("1".equals(txt_size)) {
+            if ("2".equals(txt_size)) {
                 quote_text_size = TEXT_SIZE_BODY_MEDIUM;
                 author_text_size = TEXT_SIZE_AUTHOR_MEDIUM;
             } else
-            if ("2".equals(txt_size)) {
+            if ("3".equals(txt_size)) {
                 quote_text_size = TEXT_SIZE_BODY_LARGE;
                 author_text_size = TEXT_SIZE_AUTHOR_LARGE;
             }
@@ -381,12 +392,15 @@ public class DayDreamerQuoth extends DreamService {
         contentDateView.setTypeface(regularTypeface);
         contentDateView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
 
+        contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
+
         contentBatteryPctView = (TextView)findViewById(R.id.batteryPct);
         contentBatteryPctView.setTypeface(regularTypeface);
+        contentBatteryPctView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
 
-        contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
         chargeTypeView = contentBatteryStatusView.findViewById(R.id.batteryChrgType);
         chargeTypeView.setTypeface(regularTypeface);
+        chargeTypeView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
 
         boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
         if (!showTime){
