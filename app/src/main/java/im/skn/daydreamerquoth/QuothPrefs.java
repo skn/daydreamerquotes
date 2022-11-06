@@ -12,10 +12,7 @@ public class QuothPrefs extends PreferenceActivity {
     public static final String PREF_DELAY_BETWEEN_QUOTES = "PREF_DELAY_BETWEEN_QUOTES";
     public static final String PREF_TEXT_SIZE = "PREF_TEXT_SIZE";
     public static final String PREF_FONT_FAMILY = "PREF_FONT_FAMILY";
-    public static final String KEY_ABOUT = "about";
-	private static SharedPreferences prefs;
-	private static String summary;
-	
+
     public QuothPrefs() {
 
     }
