@@ -225,6 +225,7 @@ public class DayDreamerQuoth extends DreamService {
         }
         if (showBatteryStatus) {
             ImageView batteryStatusImageView = findViewById(R.id.batteryStatus);
+            TextView batteryChrgTypeTextView = findViewById(R.id.batteryChrgType);
             if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
                 if (batteryPct <= 20) {
                     batteryStatusImageView.setImageResource(R.drawable.ic_battery_charging_20);
@@ -243,13 +244,13 @@ public class DayDreamerQuoth extends DreamService {
                 }
                 switch (batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)) {
                     case BatteryManager.BATTERY_PLUGGED_AC:
-                        ((TextView) findViewById(R.id.batteryChrgType)).setText("A");
+                        batteryChrgTypeTextView.setText("A");
                         break;
                     case BatteryManager.BATTERY_PLUGGED_USB:
-                        ((TextView) findViewById(R.id.batteryChrgType)).setText("U");
+                        batteryChrgTypeTextView.setText("U");
                         break;
                     case BatteryManager.BATTERY_PLUGGED_WIRELESS:
-                        ((TextView) findViewById(R.id.batteryChrgType)).setText("W");
+                        batteryChrgTypeTextView.setText("W");
                         break;
                 }
             } else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING || status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
