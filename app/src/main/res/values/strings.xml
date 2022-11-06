@@ -4,4 +4,5 @@
     <string name="app_title">Quotes the Daydreamer</string>
     <string name="lbl_quote_body">“%1$s”</string>
     <string name="lbl_quote_author">― %1$s</string>
+    <string name="lbl_battery_pct">%1$d%%</string>
 </resources>

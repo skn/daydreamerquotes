@@ -228,7 +228,8 @@ public class DayDreamerQuoth extends DreamService {
     };
 
     private void setBatteryDetails(int status, int batteryPct) {
-        ((TextView) findViewById(R.id.batteryPct)).setText(Integer.toString(batteryPct)+"%");
+        String finalBatteryPct = getResources().getString(R.string.lbl_battery_pct, batteryPct);
+        ((TextView) findViewById(R.id.batteryPct)).setText(finalBatteryPct);
         if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
             if (batteryPct <= 20) {
                 ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_20);
