@@ -3,7 +3,7 @@
 <manifest android:versionCode="32" android:versionName="3.1.0"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <application android:label="@string/app_title" android:icon="@drawable/ic_launcher" android:allowBackup="true">
+    <application android:theme="@style/Theme.AppCompat" android:label="@string/app_title" android:icon="@drawable/ic_launcher" android:allowBackup="true">
         <service
             android:label="@string/app_title"
             android:icon="@drawable/ic_launcher"

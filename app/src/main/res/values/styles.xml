@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="MyProjectTheme" parent="@style/Theme.AppCompat">
+        <item name="android:layout_alignLeft"></item>
+    </style>
     <style name="QuoteBody">
         <item name="android:textSize">28.0sp</item>
         <item name="android:textStyle">bold</item>

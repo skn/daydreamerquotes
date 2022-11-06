@@ -310,7 +310,6 @@ public class DayDreamerQuoth extends DreamService {
         ImageView batteryStatusView;
         TextView chargeTypeView;
 
-
         if (!TextUtils.isEmpty(font_family)) {
         	if ("Roboto".equals(font_family)) {
                 regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
