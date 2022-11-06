@@ -23,14 +23,5 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <!--do not add in manifest. use code to set receiver
-        <receiver android:name=".DayDreamerQuoth$mBatteryLevelReceiver"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
-                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
-                <action android:name="android.intent.action.ACTION_BATTERY_CHANGED"/>
-            </intent-filter>
-        </receiver>-->
     </application>
 </manifest>
