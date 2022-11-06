@@ -49,6 +49,7 @@ public class DayDreamerQuoth extends DreamService {
     private View firstContent;
     private final Handler handler;
     private View secondContent;
+    private View contentBatteryStatusView;
     private int shortAnimationDuration;
     private final Runnable showQuoteRunnable;
     private View toHide;
@@ -172,7 +173,7 @@ public class DayDreamerQuoth extends DreamService {
         int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
         int batteryPct = level * 100 / scale;
 
-        setBatteryDetails(status, batteryPct);
+        setBatteryDetails(status, batteryPct, batteryStatus);
 
         batteryLevelRcvr();
 
@@ -223,11 +224,12 @@ public class DayDreamerQuoth extends DreamService {
             Intent batteryStatus = registerReceiver(null, ifilter);
             int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
 
-            setBatteryDetails(status, batteryPct);
+            setBatteryDetails(status, batteryPct, batteryStatus);
         }
     };
 
-    private void setBatteryDetails(int status, int batteryPct) {
+    private void setBatteryDetails(int status, int batteryPct,Intent batteryStatus) {
+
         String finalBatteryPct = getResources().getString(R.string.lbl_battery_pct, batteryPct);
         ((TextView) findViewById(R.id.batteryPct)).setText(finalBatteryPct);
         if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
@@ -251,6 +253,17 @@ public class DayDreamerQuoth extends DreamService {
             }
             else {
                 ((ImageView) findViewById(R.id.batteryStatus)).setImageResource(R.drawable.ic_battery_charging_full);
+            }
+            switch (batteryStatus.getIntExtra(BatteryManager.EXTRA_PLUGGED, -1)){
+                case BatteryManager.BATTERY_PLUGGED_AC:
+                    ((TextView) findViewById(R.id.batteryChrgType)).setText("A");
+                    break;
+                case BatteryManager.BATTERY_PLUGGED_USB:
+                    ((TextView) findViewById(R.id.batteryChrgType)).setText("U");
+                    break;
+                case BatteryManager.BATTERY_PLUGGED_WIRELESS:
+                    ((TextView) findViewById(R.id.batteryChrgType)).setText("W");
+                    break;
             }
         }
         else if (status == BatteryManager.BATTERY_STATUS_DISCHARGING || status == BatteryManager.BATTERY_STATUS_NOT_CHARGING) {
@@ -313,7 +326,9 @@ public class DayDreamerQuoth extends DreamService {
         TextView contentTimeView;
         TextView contentDateView;
         TextView contentBatteryPctView;
-        ImageView contentBatteryStatusView;
+
+        ImageView batteryStatusView;
+        TextView chargeTypeView;
 
 
         if (!TextUtils.isEmpty(font_family)) {
@@ -390,7 +405,12 @@ public class DayDreamerQuoth extends DreamService {
         contentBatteryPctView = (TextView)findViewById(R.id.batteryPct);
         contentBatteryPctView.setTypeface(regularTypeface);
 
-        contentBatteryStatusView = (ImageView)findViewById(R.id.batteryStatus);
+        contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
+        batteryStatusView = (ImageView)contentBatteryStatusView.findViewById(R.id.batteryStatus);
+        chargeTypeView = (TextView)contentBatteryStatusView.findViewById(R.id.batteryChrgType);
+        chargeTypeView.setTypeface(regularTypeface);
+        //chargeTypeView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
+
 
         boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
         if (!showTime){

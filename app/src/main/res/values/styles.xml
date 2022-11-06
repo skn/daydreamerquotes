@@ -18,13 +18,15 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:alpha">0.5</item>item>
     </style>
-
     <style name="BatteryPct">
         <item name="android:textSize">18sp</item>
         <item name="android:alpha">0.5</item>item>
     </style>
     <style name="BatteryStatus">
-        <item name="android:textSize">18sp</item>
         <item name="android:alpha">0.6</item>item>
+    </style>
+    <style name="batteryChrgType">
+        <item name="android:textSize">18sp</item>
+        <item name="android:alpha">0.5</item>item>
     </style>
 </resources>

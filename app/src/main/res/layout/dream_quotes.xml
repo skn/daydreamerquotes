@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<RelativeLayout xmlns:tools="http://schemas.android.com/tools"
     android:padding="@dimen/content_padding_normal"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
@@ -62,12 +62,37 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         style="@style/BatteryPct"/>
-    <ImageView
-        android:id="@id/batteryStatus"
-        android:paddingBottom="8sp"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true"
+
+    <RelativeLayout
+        android:id="@id/batteryStatus_content"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        style="@style/BatteryStatus"/>
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentBottom="true"
+        android:visibility="gone"
+        android:paddingBottom="9sp"
+        tools:visibility="visible">
+
+        <ImageView
+            android:id="@id/batteryStatus"
+            style="@style/BatteryStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:contentDescription="Battery charging"
+            android:layout_alignParentBottom="true"
+            tools:visibility="visible" />
+
+        <TextView
+            android:id="@id/batteryChrgType"
+            style="@style/batteryChrgType"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@id/batteryStatus"
+            android:layout_alignParentBottom="true"
+            tools:visibility="visible" />
+    </RelativeLayout>
+    <!-- add this for a background
+    android:background="@drawable/back"
+    -->
 </RelativeLayout>

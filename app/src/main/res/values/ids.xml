@@ -8,4 +8,6 @@
     <item type="id" name="date" />
     <item type="id" name="batteryPct" />
     <item type="id" name="batteryStatus" />
+    <item type="id" name="batteryStatus_content" />
+    <item type="id" name="batteryChrgType" />
 </resources>
