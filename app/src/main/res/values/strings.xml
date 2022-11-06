@@ -5,4 +5,5 @@
     <string name="lbl_quote_body">“%1$s”</string>
     <string name="lbl_quote_author">― %1$s</string>
     <string name="lbl_battery_pct">%1$d%%</string>
+    <string name="bttry_chrg_imgview_desc">Battery charging</string>
 </resources>
