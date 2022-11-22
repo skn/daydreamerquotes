@@ -3,6 +3,8 @@ This is the source code of the Google Play app [Quotes the Daydreamer](https://p
 
 Quotes the Daydreamer (QtD) displays witty, wise and enigmatic curated quotes in the Screen saver (formerly Daydream) mode.
 
+The "Daydream" screensaver feature of Android introduced in version 4.2 in 2012 and renamed "Screen saver" in 2016. QtD displays quotes in this mode.
+
 # Features
 Features include:
 - Display or hide current time
@@ -14,9 +16,11 @@ Features include:
 - Choice of font size
 - Over 4400 quotes (and growing)
 
-The "Daydream" screensaver feature of Android introduced in version 4.2 in 2012 and renamed "Screen saver" in 2016. QtD displays quotes in this mode.
+# Enabling
 
 To enable QtD: Go to "Settings" —> Display —> Screen saver/Daydream, select "Quotes the Daydreamer", customize the options available for QtD.
+
+This settings menu can also be reached by launching the app.
 
 # Compatability
 Requires Android
