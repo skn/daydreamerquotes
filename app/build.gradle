@@ -1,6 +1,21 @@
 apply plugin: 'com.android.application'
 
 android {
+    def keystore_properties = file('/Users/srijith/android/keys/im-skn-release-keystore.properties')
+    if (keystore_properties.exists()) {
+        Properties props = new Properties()
+        props.load(new FileInputStream(keystore_properties))
+        props.each { prop ->
+            project.ext.set(prop.key, prop.value)
+        }
+    }
+    // Read passwords from Gradle properties and if not found, then from environment variables
+    def keystore_file= project.hasProperty('KEYSTORE_FILE') ? KEYSTORE_FILE: System.getenv("KEYSTORE_FILE")
+    def keystore_password = project.hasProperty('KEYSTORE_PASSWORD') ? KEYSTORE_PASSWORD : System.getenv("KEYSTORE_PASSWORD")
+    def key_alias = project.hasProperty('KEY_ALIAS') ? KEY_ALIAS : System.getenv("KEY_ALIAS")
+    def key_password = project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : System.getenv("KEY_PASSWORD")
+
+
     //  Oct 2022: New apps required to target API level 31
     defaultConfig {
         minSdkVersion 17 // lower bound for app, determines which of a user’s devices an app can be installed on
@@ -11,8 +26,10 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file("/Users/srijith/android/keys/im-skn-release-key.keystore")
-            keyAlias "im-skn-release"
+            storeFile file(keystore_file)
+            storePassword keystore_password
+            keyAlias key_alias
+            keyPassword key_password
         }
     }
 

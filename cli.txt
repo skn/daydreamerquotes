@@ -1,1 +1,2 @@
 ./gradlew clean test
+./gradlew assembleRelease
