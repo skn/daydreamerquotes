@@ -29,3 +29,6 @@ Requires Android
 # Data Safety
 - No data shared with third parties
 - No data collected
+
+# License
+This project is licensed under the terms of Apache License 2.0. See LICENSE.md
