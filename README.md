@@ -1,5 +1,5 @@
 # About
-This is the source code of the Google Play app [Quotes the Daydreamer](https://play.google.com/store/apps/details?id=im.skn.daydreamerquoth)
+This is the source code of the Android app [Quotes the Daydreamer](https://play.google.com/store/apps/details?id=im.skn.daydreamerquoth)
 
 Quotes the Daydreamer (QtD) displays witty, wise and enigmatic curated quotes in the Screen saver (formerly Daydream) mode.
 
