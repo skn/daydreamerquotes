@@ -1,9 +1,9 @@
 # About
-This is the source code of the Android app [Quotes the Daydreamer](https://play.google.com/store/apps/details?id=im.skn.daydreamerquoth)
+This is the source code of the [Quotes the Daydreamer](https://play.google.com/store/apps/details?id=im.skn.daydreamerquoth) Android app 
 
 Quotes the Daydreamer (QtD) displays witty, wise and enigmatic curated quotes in the Screen saver (formerly Daydream) mode.
 
-The "Daydream" screensaver feature of Android introduced in version 4.2 in 2012 and renamed "Screen saver" in 2016. QtD displays quotes in this mode.
+The "Daydream" screensaver feature of Android introduced in version 4.2 in 2012 and was renamed to "Screen saver" in 2016. QtD displays quotes in this mode.
 
 # Features
 Features include:
