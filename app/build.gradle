@@ -16,11 +16,11 @@ android {
     def key_password = project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : System.getenv("KEY_PASSWORD")
 
 
-    //  Oct 2022: New apps required to target API level 31
+    //  Dec 2023: New apps required to target API level 33 and will be 34 in Aug '24
     defaultConfig {
-        minSdkVersion 17 // lower bound for app, determines which of a user’s devices an app can be installed on
-        targetSdkVersion 31 // which Android version the app was designed and tested on
-        compileSdkVersion 28 // which Android SDK version will be used by gradle to compile your app
+        minSdkVersion 19 // lower bound for app, determines which of a user’s devices an app can be installed on
+        targetSdkVersion 34 // which Android version the app was designed and tested on
+        compileSdk 31 // which Android SDK version will be used by gradle to compile your app
         applicationId "im.skn.daydreamerquoth"
 
     }
@@ -38,7 +38,7 @@ android {
             signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles 'proguard.cfg'
-            zipAlignEnabled true
+            //zipAlignEnabled true
             applicationVariants.all { variant ->
                 variant.outputs.all {
                     outputFileName = "QuotestheDaydreamer-${variant.name}-${variant.versionName}.apk"
@@ -58,8 +58,8 @@ dependencies {
     // Support v4
     implementation 'com.android.support:support-v4:19.0.0'
     // Robolectric
-    testImplementation "org.robolectric:robolectric:4.7.3"
-    testImplementation 'junit:junit:4.12'
-    implementation 'androidx.preference:preference:1.1.1'
-    implementation 'androidx.test:core:1.4.0'
+    testImplementation "org.robolectric:robolectric:4.11.1"
+    testImplementation 'junit:junit:4.13.2'
+    implementation 'androidx.preference:preference:1.2.1'
+    implementation 'androidx.test:core:1.5.0'
 }
