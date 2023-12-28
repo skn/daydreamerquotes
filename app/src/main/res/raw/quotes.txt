@@ -3840,7 +3840,7 @@ It was a melancholy secret that reality can arouse desires but never satisfy the
 To forget is the secret of eternal youth. One grows old only through memory. There's much too little forgetting. -- Erich Maria Remarque
 Modesty and conscientiousness receive their reward only in novels. In life they are exploited and then shoved aside. -- Erich Maria Remarque
 After silence, that which comes nearest to expressing the inexpressible is music. -- Aldous Huxley
-rwMaybe this world is another planet?s hell. -- Aldous Huxley
+Maybe this world is another planet's hell. -- Aldous Huxley
 But I don't want comfort. I want God, I want poetry, I want real danger, I want freedom, I want goodness. I want sin. -- Aldous Huxley
 I wanted to change the world. But I have found that the only thing one can be sure of changing is oneself. -- Aldous Huxley
 I want to know what passion is. I want to feel something strongly. -- Aldous Huxley
@@ -4430,3 +4430,4 @@ the habit of despair is worse than despair itself. -- Albert Camus
 A great challenge of life: Knowing enough to think you are right, but not knowing enough to know you are wrong. -- Neil deGrasse Tyson
 The purpose of the margin of safety is to render the forecast unnecessary. -- Benjamin Graham
 Things that have never happened before happen all the time. -- Scott Sagan
+Love is what remains when all other emotions are gone. -- Naval Ravikant
