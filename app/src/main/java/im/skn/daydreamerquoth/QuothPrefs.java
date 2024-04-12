@@ -3,8 +3,7 @@ package im.skn.daydreamerquoth;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.PreferenceManager;
-
+import androidx.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
 
