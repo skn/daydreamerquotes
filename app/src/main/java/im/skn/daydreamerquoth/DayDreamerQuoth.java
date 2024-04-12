@@ -218,7 +218,7 @@ public class DayDreamerQuoth extends DreamService {
 
             setBatteryDetails(status, batteryPct, batteryStatus);
         }
-    };
+    }
 
     private void setBatteryDetails(int status, int batteryPct,Intent batteryStatus) {
         if (showBatteryPct) {
@@ -309,7 +309,7 @@ public class DayDreamerQuoth extends DreamService {
         TextView contentDateView;
         TextView contentBatteryPctView;
 
-        ImageView batteryStatusView;
+        //ImageView batteryStatusView;
         TextView chargeTypeView;
 
         if (!TextUtils.isEmpty(font_family)) {
