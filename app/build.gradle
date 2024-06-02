@@ -1,7 +1,7 @@
 apply plugin: 'com.android.application'
 
 android {
-    def keystore_properties = file('/Users/srijith/android/keys/im-skn-release-keystore.properties')
+    def keystore_properties = file('/Users/srijith/projects/qtd-android-project/keys/im-skn-release-keystore.properties')
     if (keystore_properties.exists()) {
         Properties props = new Properties()
         props.load(new FileInputStream(keystore_properties))
