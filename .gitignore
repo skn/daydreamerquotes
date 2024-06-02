@@ -12,9 +12,4 @@ app/release
 #.idea/workspace.xml - remove # and delete .idea if it better suit your needs.
 .gradle
 build/
-build.gradle
-gradlew.bat
-gradlew
-gradle/wrapper/gradle-wrapper.jar
-settings.gradle
 local.properties
