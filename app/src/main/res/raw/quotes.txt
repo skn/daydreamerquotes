@@ -144,7 +144,7 @@ My life has a superb cast but I can't figure out the plot. -- Ashleigh Brilliant
 My mother's menu consisted of two choices: Take it or leave it. -- Buddy Hackett
 My wife dresses to kill. She cooks the same way. -- Henny Youngman
 Never express yourself more clearly than you are able to think. -- Niels Bohr
-Never let a day pass that you will have cause to say, 'I will do better tomorrow.' -- Brigham Young
+Never let a day pass that you will have cause to say, 'I will do better tomorrow. --  -- Brigham Young
 Never mistake motion for action. -- Ernest Hemingway
 Nothing in life is to be feared.  It is only to be understood. -- Marie Curie
 It is you who must make the effort. Masters only point the way. -- Buddha
@@ -1002,7 +1002,7 @@ Reality leaves a lot to the imagination. -- John Lennon
 One thing you can't hide - is when you're crippled inside. -- John Lennon
 God is a concept by which we measure our pain. -- John Lennon
 Limitless undying love which shines around me like a million suns it calls me on and on across the universe. -- John Lennon
-When you're drowning you don't think, 'I would be incredibly pleased if someone would notice I'm drowning and come and rescue me.' You just scream. -- John Lennon
+When you're drowning you don't think, 'I would be incredibly pleased if someone would notice I'm drowning and come and rescue me. --  You just scream. -- John Lennon
 War is over ... If you want it. -- John Lennon
 Love is like a flower-you've got to let it grow. -- John Lennon
 I get by with a little help from my friends. -- John Lennon
@@ -1285,7 +1285,7 @@ I have nothing to declare except my genius. -- Oscar Wilde
 No good deed goes unpunished. -- Oscar Wilde
 The very essence of romance is uncertainty. -- Oscar Wilde
 To love oneself is the beginning of a lifelong romance. -- Oscar Wilde
-My mother said to me, 'If you are a soldier, you will become a general. If you are a monk, you will become the Pope.' Instead, I was a painter, and became Picasso. -- Pablo Picasso
+My mother said to me, 'If you are a soldier, you will become a general. If you are a monk, you will become the Pope. --  Instead, I was a painter, and became Picasso. -- Pablo Picasso
 Computers are useless. They can only give you answers. -- Pablo Picasso
 I paint objects as I think them, not as I see them. -- Pablo Picasso
 Action is the foundational key to all success. -- Pablo Picasso
@@ -1398,7 +1398,7 @@ Out of intense complexities intense simplicities emerge. -- Winston Churchill
 Politics is more dangerous than war, for in war you are only killed once. -- Winston Churchill
 He has all of the virtues I dislike and none of the vices I admire. -- Winston Churchill
 Say what you have to say and the first time you come to a sentence with a grammatical ending - sit down. -- Winston Churchill
-It is no use saying 'we are doing our best.' You have got to succeed in doing what is necessary. -- Winston Churchill
+It is no use saying 'we are doing our best. --  You have got to succeed in doing what is necessary. -- Winston Churchill
 Do not let us speak of darker days let us speak rather of sterner days. These are not dark days: these are great days - the greatest days our country has ever lived. -- Winston Churchill
 War is mainly a catalogue of blunders. -- Winston Churchill
 No one can guarantee success in war, but only deserve it. -- Winston Churchill
@@ -1428,7 +1428,7 @@ Don't criticize what you don't understand, son. You never walked in that man's s
 Music should be something that makes you gotta move, inside or outside. -- Elvis Presley
 Do what's right for you, as long as it don't hurt no one. -- Elvis Presley
 Rock and roll music, if you like it, if you feel it, you can't help but move to it. That's what happens to me. I can't help it. -- Elvis Presley
-I believe in the Bible. I believe that all good things come from God. I don't believe I'd sing the way I do if God hadn't wanted me to.'. -- Elvis Presley
+I believe in the Bible. I believe that all good things come from God. I don't believe I'd sing the way I do if God hadn't wanted me to. -- . -- Elvis Presley
 Rhythm is something you either have or don't have, but when you have it, you have it all over. -- Elvis Presley
 The image is one thing and the human being is another...It's very hard to live up to an image, put it that way. -- Elvis Presley
 Ah just act the way ah feel. -- Elvis Presley
@@ -1537,7 +1537,7 @@ You can't deny laughter when it comes, it plops down in your favorite chair and 
 Hope is a good thing - maybe the best thing, and no good thing ever dies. -- Stephen King
 Only enemies speak the truth friends and lovers lie endlessly, caught in the web of duty. -- Stephen King
 God is cruel. Sometimes he makes you live. -- Stephen King
-When asked, 'How do you write?' I invariably answer, 'one word at a time.'. -- Stephen King
+When asked, 'How do you write?' I invariably answer, 'one word at a time. -- . -- Stephen King
 Talent is cheaper than table salt. What separates the talented individual from the successful one is a lot of hard work. -- Stephen King
 The place where you made your stand never mattered. Only that you were there...and still on your feet. -- Stephen King
 The trust of the innocent is the liar's most useful tool. -- Stephen King
@@ -2036,7 +2036,7 @@ It is quite useless knocking at the door of heaven for earthly comfort. It's not
 Relying on God has to begin all over again every day as if nothing had yet been done. -- C. S. Lewis
 All that is not eternal is eternally out of date. -- C. S. Lewis
 Courage is not simply one of the virtues, but the form of every virtue at the testing point. -- C. S. Lewis
-There are two kinds of people: those who say to God, 'Thy will be done,' and those to whom God says, 'All right, then, have it your way.'. -- C. S. Lewis
+There are two kinds of people: those who say to God, 'Thy will be done,' and those to whom God says, 'All right, then, have it your way. -- . -- C. S. Lewis
 The higher animals are in a sense drawn into Man when he loves them and makes them (as he does) much more nearly human than they would otherwise be. -- C. S. Lewis
 Though our feelings come and go, God's love for us does not. -- C. S. Lewis
 It is not the strongest of the species that survives, nor the most intelligent that survives. It is the one that is the most adaptable to change. -- Charles Darwin
@@ -2543,7 +2543,7 @@ The depressing thing about tennis is that no matter how good I get, I'll never b
 If you are flammable and have legs, you are never blocking a fire exit. -- Mitch Hedberg
 A severed foot is the ultimate stocking stuffer. -- Mitch Hedberg
 Every book is a children's book if the kid can read!. -- Mitch Hedberg
-Every time I go and shave, I assume there's someone else on the planet shaving. So I say, 'I'm gonna go shave, too.'. -- Mitch Hedberg
+Every time I go and shave, I assume there's someone else on the planet shaving. So I say, 'I'm gonna go shave, too. -- . -- Mitch Hedberg
 I don't have a girlfriend. But I do know a woman who'd be mad at me for saying that. -- Mitch Hedberg
 I know a lot about cars, man. I can look at any car's headlights and tell you exactly which way it's coming. -- Mitch Hedberg
 I like to play blackjack. I'm not addicted to gambling. I'm addicted to sitting in a semi-circle. -- Mitch Hedberg
@@ -2715,7 +2715,7 @@ No one lights a lamp and puts it in a place where it will be hidden, or under a 
 Love the Lord your God with all your passion and prayer and intelligence. Love others as well as you love yourself. -- Jesus Christ
 Let one who has become wealthy reign, and let one who has power renounce. -- Jesus Christ
 Blessed are they who hunger and thirst for righteousness for they shall be satisfied. -- Jesus Christ
-You have heard that it was said, 'Eye for eye, and tooth for tooth.' But I tell you, do not resist an evil person. If someone strikes you on the right cheek, turn to him the other also. -- Jesus Christ
+You have heard that it was said, 'Eye for eye, and tooth for tooth. --  But I tell you, do not resist an evil person. If someone strikes you on the right cheek, turn to him the other also. -- Jesus Christ
 You are the salt of the earth but if the salt loses its flavor, how shall it be seasoned? It is then good for nothing but to be thrown out and trampled underfoot by men. -- Jesus Christ
 My specialty is detached malevolence. -- Alice Longworth
 If you can't say something good about someone, sit right here by me. -- Alice Longworth
@@ -2821,7 +2821,7 @@ It's often just enough to be with someone. I don't need to touch them. Not even 
 Just because I don't care doesn't mean I don't understand. -- Homer Simpson
 I'm normally not a praying man, but if you're up there, please save me Superman. -- Homer Simpson
 Well, it's 1 a.m. Better go home and spend some quality time with the kids. -- Homer Simpson
-Maybe, just once, someone will call me 'Sir' without adding, 'You're making a scene.'. -- Homer Simpson
+Maybe, just once, someone will call me 'Sir' without adding, 'You're making a scene. -- . -- Homer Simpson
 Doughnuts. Is there anything they can't do?. -- Homer Simpson
 You know, boys, a nuclear reactor is a lot like a woman. You just have to read the manual and press the right buttons. -- Homer Simpson
 Lisa, if you don't like your job you don't strike. You just go in every day and do it really half-assed. That's the American way. -- Homer Simpson
@@ -3305,7 +3305,7 @@ A mediocre idea that generates enthusiasm will go further than a great idea that
 Central banks don't have divine wisdom. They try to do the best analysis they can and must be prepared to stand or fall by the quality of that analysis. -- Mary Kay Ash
 Criticize the act, not the person. -- Mary Kay Ash
 Dare to risk public criticism. -- Mary Kay Ash
-Everyone has an invisible sign hanging from their neck saying, 'Make me feel important.' Never forget this message when working with people. -- Mary Kay Ash
+Everyone has an invisible sign hanging from their neck saying, 'Make me feel important. --  Never forget this message when working with people. -- Mary Kay Ash
 Everyone wants to be appreciated, so if you appreciate someone, don't keep it a secret. -- Mary Kay Ash
 Give yourself something to work toward - constantly. -- Mary Kay Ash
 Most people live and die with their music still unplayed. They never dare to try. -- Mary Kay Ash
@@ -3944,7 +3944,7 @@ I find distasteful the traditional idea of Christianity which preaches the resur
 Genuine love is volitional rather than emotional. -- Scott Peck
 The central defect of evil is not sin but the refusal to acknowledge sin. -- Scott Peck
 Until you value yourself, you won't value your time. Until you value your time, you will not do anything with it. -- Scott Peck
-We must be willing to fail and to appreciate the truth that often 'Life is not a problem to be solved, but a mystery to be lived.'. -- Scott Peck
+We must be willing to fail and to appreciate the truth that often 'Life is not a problem to be solved, but a mystery to be lived. -- . -- Scott Peck
 Love is the free exercise of choice. Two people love each other only when they are quite capable of living without each other but choose to live with each other. -- Scott Peck
 The difficulty we have in accepting responsibility for our behaviour lies in the desire to avoid the pain of the consequences of that behaviour. -- Scott Peck
 If we know exactly where we're going, exactly how to get there, and exactly what we'll see along the way, we won't learn anything. -- Scott Peck
@@ -4393,13 +4393,13 @@ If you get tired, learn to rest, not to quit. -- Banksy
 Patience, I believe, is a core competency of a healthy civilization. -- Stewart Brand
 Bad companies are destroyed by crisis, Good companies survive them, Great companies are improved by them. -- Andy Grove
 The essential thing is to work in a state of mind that approaches prayer. -- Henri Matisse
-How am I complicit in creating the conditions I say I don’t want? -- Jerry Colonna
+How am I complicit in creating the conditions I say I don't want? -- Jerry Colonna
 You really can change the world if you care enough. -- Marian Wright Edelman
 Enough is a decision not an amount. -- Alison Faulkner
 Laughter is carbonated holiness. -- Anne Lamott
 Despair is a failure of the imagination. -- Wade Davis
 Creativity is the defeat of habit by originality. -- Arthur Koestler
-When you hit a wrong note, it’s the next note that makes it good or bad. -- Miles Davis
+When you hit a wrong note, it's the next note that makes it good or bad. -- Miles Davis
 You are what you love, not what loves you. -- Charlie Kaufman
 Love consists of this: two solitudes that meet, protect and greet each other. -- Rainer Maria Rilke
 Knowing what you don't know is more useful than being brilliant. -- Charlie Munger
@@ -4407,7 +4407,7 @@ A majority of life's errors are caused by forgetting what one is really trying t
 Mimicking the herd invites regression to the mean. -- Charlie Munger
 To get what you want, you have to deserve what you want. -- Charlie Munger
 Those who keep learning, will keep rising. -- Charlie Munger
-You don’t have to be brilliant, only a little bit wiser than the other guys, on average, for a long time. -- Charlie Munger
+You don't have to be brilliant, only a little bit wiser than the other guys, on average, for a long time. -- Charlie Munger
 The best thing a human being can do is help another human being know more. -- Charlie Munger
 We insist on a lot of time being available almost every day to just sit and think. -- Charlie Munger
 You must know the big ideas in the big disciplines and use them routinely. -- Charlie Munger
@@ -4435,3 +4435,94 @@ Whatever seed you are, bloom. -- Atticus
 Do something well, and that is quickly enough. -- Baltasar Gracian
 Things turn out best for the people who make the best of the way things turn out. -- John Wooden
 Hope clouds observation. -- Frank Herbert
+I like long walks, especially when they are taken by people who annoy me. -- Fred Allen
+If you find it hard to laugh at yourself, I would be happy to do it for you. -- Groucho Marx
+History teaches us that men and nations behave wisely once they have exhausted all other alternatives. -- Abba Eban
+I cannot speak well enough to be unintelligible. -- Jane Austen, Northanger Abbey
+When one door closes, another opens. Or you can open the closed door. That's how doors work. -- Unknown
+Have no fear of perfection, you'll never reach it. -- Salvador Dali
+Mail your packages early so the post office can lose them in time for Christmas. -- Johnny Carson
+If everything seems to be going well, you have overlooked something. -- Unknown
+A positive attitude may not solve all your problems, but it will annoy enough people to make it worth the effort. -- Unknown
+Don't be so humble, you are not that great. -- Golda Meir
+When people ask me stupid questions, it is my legal obligation to give a sarcastic remark. -- Unknown
+You see, that is the sad, sorry, terrible thing about sarcasm. It's really funny. -- Brandon Sanderson, Alcatraz Versus the Evil Librarians
+Sarcasm is the last refuge of the imaginatively bankrupt. -- Cassandra Clare, City of Bones
+Sarcasm helps me overcome the harshness of the reality we live, eases the pain of scars and makes people smile. -- Mahmoud Darwish
+It's all fun and games until someone doesn't pick up on the sarcasm. -- Unknown
+It's wildly irritating to have invented something as revolutionary as sarcasm, only to have it abused by amateurs. -- Christopher Moore, Lamb
+My level of sarcasm has gotten to a point where I don't even know if I am kidding anymore. -- Unknown
+You never realize how truly sarcastic you are until you have a mini-me who acts the same way. -- Unknown
+Sarcasm is the lowest form of wit! Yet it remains the funniest. -- Unknown
+Sarcasm is the secret language that everyone uses when they want to say something mean to your face. -- Unknown
+I'm allergic to stupidity. I break out in sarcasm. -- Unknown
+Honey, tact is for people who aren't witty enough to be sarcastic. -- Megan Mullally as Karen Walker
+Sarcasm is not an attitude. It is an art. -- Unknown
+Sarcasm and compassion are two of the qualities that make life on Earth tolerable. -- Nick Hornby, Songbook
+Sarcasm: helping the intelligent tolerate the obtuse for thousands of years. -- Unknown
+I'm not sarcastic. I'm just intelligent beyond your understanding. -- Unknown
+There is a great need for a sarcasm font. -- Darynda Jones, Third Grave Dead Ahead
+Sarcasm is the body's natural defense against stupidity. -- Unknown
+If you think nobody cares that you're alive, try missing a couple of car payments. -- Unknown
+Sometimes I feel so sick at the state of the world I can't even finish my second apple pie. -- Banksy, Wall and Peace
+When science finally locates the center of the universe, some people will be surprised to learn they're not it. -- Bernard Bailey
+What's on your mind, if you will allow the overstatement. -- Fred Allen
+Everyone has the right to be stupid, but you're abusing the privilege. -- Unknown
+I sometimes think that God, in creating man, somewhat overestimated his ability. -- Oscar Wilde
+I'm sorry. I use my rapier wit to hide my inner pain. -- Cassandra Clare
+If at first you don't succeed, try, try again. Then quit. There's no point in being a damn fool about it. -- W.C. Fields
+Please be patient. I am ruining things as fast as I can. -- Unknown
+I hate it when I think I'm buying organic vegetables but when I get home, I discover they're just regular donuts. -- Unknown
+People think I go out of my way to piss them off. Trust me, it's not out of my way at all. -- Unknown
+Whatever you do, always give 100%. Unless you're donating blood. -- Bill Murray
+Zombies eat brains. You are safe. -- Jon Stewart
+Some cause happiness wherever they go, others, whenever they go. -- Oscar Wilde, The Duchess of Padua
+Light travels faster than sound. This is why some people appear bright until they speak. -- Steven Wright
+He has van Gogh's ear for music. -- Billy Wilder
+You know what I like about people? Their dogs. -- Unknown
+Lead me not into temptation; I can find the way myself. -- Rita Mae Brown
+I'll always cherish the original misconception I had of you. -- Unknow
+I'm sorry I hurt your feelings when I called you stupid. I really thought you knew everything. -- Unknown
+It's OK if you don't like me. Not everyone has good taste. -- Unknown
+I'd agree with you, but then we'd both be wrong. -- Russell Lynes
+Please cancel my subscription to your issues. -- Unknown
+You're not a complete idiot. Some parts are missing. -- Unknown
+I'm sorry, did the middle of my sentence interrupt the beginning of yours? -- Unknown
+Sarcasm is such an unattractive quality in anyone but me. -- Samantha Young, Smokeless Fire
+The brain is a wonderful organ; it starts working the moment you get up in the morning and does not stop until you get into the office. -- Robert Frost
+People think it must be fun to be a super genius, but they don't realize how hard it is to put up with all the idiots in the world. -- Bill Watterson, The Calvin and Hobbes Tenth Anniversary Book
+Please submit your ideas to me today so I can submit them as my own tomorrow. -- Unknown
+I love deadlines. I like the whooshing sound they make as they fly by. -- Douglas Adams, The Salmon of Doubt
+Oh, you hate your job? Why didn't you say so? There's a support group for that. It's called everybody, and they meet at the bar. -- Drew Carey
+There are times my greatest achievement is keeping my mouth shut. -- Unknown
+People say nothing is impossible, but I do nothing every day. -- A.A. Milne, Winnie-the-Pooh
+I have not failed. I've just found 10,000 ways that won't work. -- Thomas Edison
+I don't always tolerate stupid people. But when I do, I'm probably at work. -- Unknown
+There's no secret about success. Did you ever know a successful man who didn't tell you about it? -- Kin Hubbard
+Don't mistake my efficiency as meaning I want to do your job too. -- Unknown
+I have a theory of relatives too. Don't hire them. -- Jack L. Warner
+I'd tell you to go to hell, but I work there, and I don't want you showing up. -- Unknown
+I haven't even gone to bed yet, and I already can't wait to come home from work tomorrow. -- Unknown
+The only time a woman really succeeds in changing a man is when he's a baby. -- Natalie Wood
+Mother Nature is wonderful. She gives us 12 years to develop a love for our children before turning them into teenagers. -- Eugene Bertin
+Having children makes you no more a parent than having a piano makes you a pianist. -- Michael Levine
+Everybody knows how to raise children, except the people who have them. -- P.J. O'Rourke
+In general, my children refuse to eat anything that hasn't danced on television. -- Erma Bombeck
+Keep rolling your eyes. You might just find a brain back there. -- Unknown
+If you must make a noise, make it quietly. -- Oliver Hardy
+Folks, I don't trust children. They're here to replace us. -- Stephen Colbert
+A crisis is a terrible thing to waste. -- Paul Romer
+Always remember that you're unique. Just like everyone else. -- Unknown
+Education is what remains after one has forgotten everything he learned in school. -- Unknown
+I am so clever that sometimes I don't understand a single word of what I am saying. -- Oscar Wilde, The Happy Prince and Other Stories
+I feel so miserable without you; it's almost like having you here. -- Stephen Bishop
+I was married by a judge. I should have asked for a jury. -- Groucho Marx
+When a man steals your wife, there is no better revenge than to let him keep her. -- Sacha Guitry
+Sometimes I need what only you can provide: your absence. -- Ashleigh Brilliant
+They say marriages are made in heaven. But so is thunder and lightning. -- Clint Eastwood
+I had a perfectly wonderful evening, but this wasn't it. -- Groucho Marx
+We get married to have an ally against our family. -- Jonathan Tropper
+During labor, the pain is so great that a woman can almost imagine what a man feels like when he has a fever. -- Unknown
+Marriage is a wonderful institution, but who wants to live in an institution? -- Groucho Marx
+A man in love is incomplete until he has married. Then he's finished. -- Zsa Zsa Gabor
+Marry me, and I'll never look at another horse! -- Groucho Marx
