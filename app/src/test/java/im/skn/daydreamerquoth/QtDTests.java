@@ -50,7 +50,7 @@ public class QtDTests {
         }
 
         if (hasDuplicate){
-            System.out.print("Duplicate line is at line: " + Integer.toString(lineNumber));
+            System.out.println("*** Duplicate line is at line: " + Integer.toString(lineNumber));
             reality = "NOT UNIQUE";
         } else {
             reality = "UNIQUE";
