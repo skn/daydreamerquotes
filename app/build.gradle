@@ -16,11 +16,20 @@ android {
     def key_password = project.hasProperty('KEY_PASSWORD') ? KEY_PASSWORD : System.getenv("KEY_PASSWORD")
 
 
-    //  Dec 2023: New apps required to target API level 33 and will be 34 in Aug '24
+    // https://developer.android.com/build
+    // Dec 2023: New apps required to target API level 33 and will be 34 in Aug '24
     defaultConfig {
-        minSdkVersion 19 // lower bound for app, determines which of a user’s devices an app can be installed on
-        targetSdkVersion 34 // which Android version the app was designed and tested on
-        compileSdk 31 // which Android SDK version will be used by gradle to compile your app
+        // With the Android Gradle Plugin 7.0.0 onwards you can use:
+        //
+        //minSdk instead of minSdkVersion
+        //targetSdk instead of targetSdkVersion
+        //compileSdk instead of compileSdkVersion
+
+        //minSdkVersion 19 // lower bound for app, determines which of a user’s devices an app can be installed on
+        //targetSdkVersion 34 // which Android version the app was designed and tested on
+        minSdk 19 // lower bound for app, determines which of a user’s devices an app can be installed on
+        targetSdk 34 // which Android version the app was designed and tested on
+        compileSdk 34 // which Android SDK version will be used by gradle to compile your app
         applicationId "im.skn.daydreamerquoth"
 
     }
