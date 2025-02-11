@@ -63,6 +63,7 @@ public class DayDreamerQuoth extends DreamService {
     private boolean showBatteryStatus;
     private List<String> quotes;
     BroadcastReceiver mBatteryLevelReceiver = new mBatteryLevelReceiver();
+    private static final Random random = new Random();
 
     public DayDreamerQuoth() {
     	super();
@@ -94,7 +95,7 @@ public class DayDreamerQuoth extends DreamService {
         if (quotes == null || quotes.isEmpty()) {
             return NO_FILE_ERR_MSG;
         }
-        return quotes.get(new Random().nextInt(numberOfQuotes));
+        return quotes.get(random.nextInt(numberOfQuotes));
     }
 
     private void setQuote() {
