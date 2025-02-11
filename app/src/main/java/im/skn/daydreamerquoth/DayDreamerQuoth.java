@@ -92,7 +92,14 @@ public class DayDreamerQuoth extends DreamService {
         }
     }
     private String randLineFromFile() {
-        if (quotes == null || quotes.isEmpty()) {
+        if (quotes == null) {  // Lazy-load if quotes have not been loaded yet.
+            try {
+                loadQuotes();
+            } catch (IOException e) {
+                return NO_FILE_ERR_MSG;
+            }
+        }
+        if (quotes.isEmpty()) {
             return NO_FILE_ERR_MSG;
         }
         return quotes.get(random.nextInt(numberOfQuotes));
@@ -310,11 +317,7 @@ public class DayDreamerQuoth extends DreamService {
         		delay = DEFAULT_DELAY;
         	}
         }
-        try {
-            loadQuotes();
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
+
         firstContent = findViewById(R.id.quote_content_first);
         firstContentBodyTextview = (TextView)firstContent.findViewById(R.id.quote_body);
         firstContentAuthTextview = (TextView)firstContent.findViewById(R.id.quote_author);
