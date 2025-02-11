@@ -87,7 +87,7 @@ public class DayDreamerQuoth extends DreamService {
         }
         numberOfQuotes = quotes.size();
         if (DEBUG) {
-            Log.i("lineNumbers2", String.valueOf(quotes.size()));
+            Log.i("lineNumbers", String.valueOf(quotes.size()));
         }
     }
     private String randLineFromFile() {
