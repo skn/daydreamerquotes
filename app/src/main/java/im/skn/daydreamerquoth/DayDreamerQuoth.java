@@ -118,15 +118,9 @@ public class DayDreamerQuoth extends DreamService {
 
         qline = randLineFromFile();
 
-		try {
-			qlineparts = qline.split(" -- ");
-        	quoteStr = qlineparts[0];
-        	authStr = qlineparts[1];
-		} catch (ArrayIndexOutOfBoundsException e)
-		{
-			System.err.println("ArrayIndexOutOfBoundsException: " + e.getMessage());
-			System.err.println("Line: " + qline);
-		}
+        qlineparts = qline.split(" -- ", 2);
+        quoteStr = qlineparts[0];
+        authStr = (qlineparts.length > 1) ? qlineparts[1] : "Unknown";
 
         resources = getResources();
         finalQuoteStr = resources.getString(R.string.lbl_quote_body, quoteStr);
