@@ -14,6 +14,7 @@ import android.os.Handler;
 import android.os.Looper;
 import android.service.dreams.DreamService;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -25,7 +26,7 @@ import java.io.InputStreamReader;
 import java.util.Random;
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = false; /* DEBUG is set to protected so as to be accessible from unit test */
+    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 8000L;
 
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
@@ -73,29 +74,21 @@ public class DayDreamerQuoth extends DreamService {
         	}
         };
     }
-    
+
     private int numberOfLines() throws IOException {
-    	InputStream is = ctx.getResources().openRawResource(R.raw.quotes);
-        try {
-            byte[] c = new byte[1024];
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                ctx.getResources().openRawResource(R.raw.quotes)))) {
             int count = 0;
-            int readChars = 0;
-            boolean empty = true;
-            while ((readChars = is.read(c)) != -1) {
-                empty = false;
-                for (int i = 0; i < readChars; ++i) {
-                    if (c[i] == '\n') {
-                        ++count;
-                    }
-                }
+            while (reader.readLine() != null) {
+                count++;
             }
-            is.close();
-            return (count == 0 && !empty) ? 1 : count;
-        } finally {
-            is.close();
+            if (DEBUG) {
+                Log.i("lineNumbers", String.valueOf(count));
+            }
+            return count;
         }
     }
-    
+
     private String randLineFromFile() throws IOException {
     	String theLine="";
         if (numberOfQuotes > 0 ) {
