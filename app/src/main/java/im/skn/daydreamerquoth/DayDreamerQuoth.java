@@ -76,7 +76,7 @@ public class DayDreamerQuoth extends DreamService {
     private void loadQuotes() throws IOException {
         quotes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                ctx.getResources().openRawResource(R.raw.quotes)))) {
+                this.getResources().openRawResource(R.raw.quotes)))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 quotes.add(line);
