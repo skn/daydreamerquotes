@@ -2,6 +2,8 @@ package im.skn.daydreamerquoth;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.animation.AnimatorSet;
+import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -129,33 +131,20 @@ public class DayDreamerQuoth extends DreamService {
         ((TextView) toShow.findViewById(R.id.quote_body)).setText(finalQuoteStr);
         ((TextView) toShow.findViewById(R.id.quote_author)).setText(finalAuthStr);
 
-        //https://developer.android.com/develop/ui/views/animations/reveal-or-hide-view#CrossfadeViews
-        // Initially hide the toShow view.
-        toShow.setVisibility(View.GONE);
-        // Set the toShow view to 0% opacity but visible, so that it is visible
-        // (but fully transparent) during the animation.
-        toShow.setAlpha(0.0F);
+        AnimatorSet animatorSet = new AnimatorSet();
+        animatorSet.playTogether(
+                ObjectAnimator.ofFloat(toShow, "alpha", 0f, 1f).setDuration(shortAnimationDuration),
+                ObjectAnimator.ofFloat(toHide, "alpha", 1f, 0f).setDuration(shortAnimationDuration)
+        );
+        animatorSet.addListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                toHide.setVisibility(View.GONE);
+            }
+        });
         toShow.setVisibility(View.VISIBLE);
-        // Animate the toShow view to 100% opacity, and clear any animation
-        // listener set on the view.
-        toShow.animate()
-                .alpha(1.0F)
-                .setDuration(shortAnimationDuration)
-                .setListener(null);
+        animatorSet.start();
 
-        // Animate the toHide view to 0% opacity. After the animation ends,
-        // set its visibility to GONE as an optimization step (it won't
-        // participate in layout passes, etc.)
-        toHide.animate()
-                .alpha(0.0F)
-                .setDuration(shortAnimationDuration)
-                .setListener(new AnimatorListenerAdapter() {
-                    @Override
-        	        public void onAnimationEnd(Animator animator) {
-                        super.onAnimationEnd(animator);
-                        toHide.setVisibility(View.GONE);
-        	        }
-                });
     }
 
     private void batteryLevelRcvr() {
