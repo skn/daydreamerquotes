@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = false; /* DEBUG is set to protected so as to be accessible from unit test */
+    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 8000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
@@ -52,12 +52,9 @@ public class DayDreamerQuoth extends DreamService {
     private View firstContent;
     private final Handler handler;
     private View secondContent;
-    private View contentBatteryStatusView;
     private int shortAnimationDuration;
     private final Runnable showQuoteRunnable;
     private View toHide;
-    private View toShow;
-    private Context ctx;
     private int numberOfQuotes;
     private boolean showBatteryPct;
     private boolean showBatteryStatus;
@@ -106,11 +103,12 @@ public class DayDreamerQuoth extends DreamService {
         Resources resources;
         String qline;
         String[] qlineparts;
-        String quoteStr = "";
-        String authStr = "";
+        String quoteStr;
+        String authStr;
         String finalQuoteStr;
         String finalAuthStr;
 
+        View toShow;
         if (animateSecond) {
             animateSecond = false;
             toShow = secondContent;
@@ -164,6 +162,7 @@ public class DayDreamerQuoth extends DreamService {
 
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = registerReceiver(null, ifilter);
+            assert batteryStatus != null;
             int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
 
             setBatteryDetails(status, batteryPct, batteryStatus);
@@ -237,7 +236,6 @@ public class DayDreamerQuoth extends DreamService {
 
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        ctx = this;
         setInteractive(true);
         setFullscreen(true);
         setContentView(R.layout.dream_quotes);
@@ -307,7 +305,8 @@ public class DayDreamerQuoth extends DreamService {
         	delay = DEBUG_DELAY_QUOTE;
         } else {
         	try {
-                delay = Long.valueOf(delay_txt);
+                assert delay_txt != null;
+                delay = Long.parseLong(delay_txt);
         	}
         	catch (NumberFormatException numberformatexception) {
         		delay = DEFAULT_DELAY;
@@ -315,32 +314,32 @@ public class DayDreamerQuoth extends DreamService {
         }
 
         firstContent = findViewById(R.id.quote_content_first);
-        firstContentBodyTextview = (TextView)firstContent.findViewById(R.id.quote_body);
-        firstContentAuthTextview = (TextView)firstContent.findViewById(R.id.quote_author);
+        firstContentBodyTextview = firstContent.findViewById(R.id.quote_body);
+        firstContentAuthTextview = firstContent.findViewById(R.id.quote_author);
         firstContentBodyTextview.setTypeface(regularTypeface);
         firstContentAuthTextview.setTypeface(lightTypeface);
         firstContentBodyTextview.setTextSize(2, quote_text_size);
         firstContentAuthTextview.setTextSize(2, author_text_size);
 
         secondContent = findViewById(R.id.quote_content_second);
-        secondContentBodyTextview = (TextView)secondContent.findViewById(R.id.quote_body);
-        secondContentAuthTextview = (TextView)secondContent.findViewById(R.id.quote_author);
+        secondContentBodyTextview = secondContent.findViewById(R.id.quote_body);
+        secondContentAuthTextview = secondContent.findViewById(R.id.quote_author);
         secondContentBodyTextview.setTypeface(regularTypeface);
         secondContentAuthTextview.setTypeface(lightTypeface);
         secondContentBodyTextview.setTextSize(2, quote_text_size);
         secondContentAuthTextview.setTextSize(2, author_text_size);
 
-        contentTimeView = (TextView)findViewById(R.id.time);
+        contentTimeView = findViewById(R.id.time);
         contentTimeView.setTypeface(regularTypeface);
         contentTimeView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
 
-        contentDateView = (TextView)findViewById(R.id.date);
+        contentDateView = findViewById(R.id.date);
         contentDateView.setTypeface(regularTypeface);
         contentDateView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
 
-        contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
+        View contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
 
-        contentBatteryPctView = (TextView)findViewById(R.id.batteryPct);
+        contentBatteryPctView = findViewById(R.id.batteryPct);
         contentBatteryPctView.setTypeface(regularTypeface);
         contentBatteryPctView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
 
@@ -398,6 +397,7 @@ public class DayDreamerQuoth extends DreamService {
         // Are we charging / charged?
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
+        assert batteryStatus != null;
         int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
 
         int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
