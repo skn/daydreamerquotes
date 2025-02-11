@@ -70,11 +70,7 @@ public class DayDreamerQuoth extends DreamService {
         handler = new Handler(Looper.getMainLooper());
         delay = DEFAULT_DELAY;
         animateSecond = false;
-        showQuoteRunnable = new Runnable() {
-        	public void run() {
-        		showQuote();
-        	}
-        };
+        showQuoteRunnable = this::showQuote;
     }
 
     private void loadQuotes() throws IOException {
