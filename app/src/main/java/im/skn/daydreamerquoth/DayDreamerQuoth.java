@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
+    protected static final boolean DEBUG = false; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 8000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
@@ -261,44 +261,49 @@ public class DayDreamerQuoth extends DreamService {
         TextView chargeTypeView;
 
         if (!TextUtils.isEmpty(font_family)) {
-        	if ("Roboto".equals(font_family)) {
-                regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
-                lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-            } else
-            if ("Santana".equals(font_family)) {
-                regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/Santana-Bold.ttf");
-                lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/Santana.ttf");
-            } else
-            if ("DroidSerif".equals(font_family)) {
-            	regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/DroidSerif-Bold.ttf");
-                lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/DroidSerif.ttf");
-            } else
-            if ("OpenSans".equals(font_family)) {
-            	regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
-                lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Light.ttf");
-            }
-            else
-            if ("Typewriter".equals(font_family)) {
-                regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaAEG.ttf");
-                lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaRoyalLight.ttf");
+            switch (font_family) {
+                case "Roboto":
+                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
+                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
+                    break;
+                case "Santana":
+                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/Santana-Bold.ttf");
+                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/Santana.ttf");
+                    break;
+                case "DroidSerif":
+                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/DroidSerif-Bold.ttf");
+                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/DroidSerif.ttf");
+                    break;
+                case "OpenSans":
+                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
+                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Light.ttf");
+                    break;
+                case "Typewriter":
+                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaAEG.ttf");
+                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaRoyalLight.ttf");
+                    break;
             }
         }
         if (!TextUtils.isEmpty(txt_size)) {
-            if ("0".equals(txt_size)) {
-                quote_text_size = TEXT_SIZE_BODY_TINY;
-                author_text_size = TEXT_SIZE_AUTHOR_TINY;
-            } else
-            if ("1".equals(txt_size)) {
-                quote_text_size = TEXT_SIZE_BODY_SMALL;
-                author_text_size = TEXT_SIZE_AUTHOR_SMALL;
-            } else
-            if ("2".equals(txt_size)) {
-                quote_text_size = TEXT_SIZE_BODY_MEDIUM;
-                author_text_size = TEXT_SIZE_AUTHOR_MEDIUM;
-            } else
-            if ("3".equals(txt_size)) {
-                quote_text_size = TEXT_SIZE_BODY_LARGE;
-                author_text_size = TEXT_SIZE_AUTHOR_LARGE;
+            switch (txt_size) {
+                case "0":
+                    quote_text_size = TEXT_SIZE_BODY_TINY;
+                    author_text_size = TEXT_SIZE_AUTHOR_TINY;
+                    break;
+                case "1":
+                    // Variable is already assigned this value by default
+                    // But still assigning here again for completeness
+                    quote_text_size = TEXT_SIZE_BODY_SMALL;
+                    author_text_size = TEXT_SIZE_AUTHOR_SMALL;
+                    break;
+                case "2":
+                    quote_text_size = TEXT_SIZE_BODY_MEDIUM;
+                    author_text_size = TEXT_SIZE_AUTHOR_MEDIUM;
+                    break;
+                case "3":
+                    quote_text_size = TEXT_SIZE_BODY_LARGE;
+                    author_text_size = TEXT_SIZE_AUTHOR_LARGE;
+                    break;
             }
         }
         if (DEBUG) {
