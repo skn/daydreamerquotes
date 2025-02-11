@@ -23,12 +23,13 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class DayDreamerQuoth extends DreamService {
     protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 8000L;
-
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
     private static final int TEXT_SIZE_AUTHOR_SMALL = 24;
@@ -38,14 +39,12 @@ public class DayDreamerQuoth extends DreamService {
     private static final int TEXT_SIZE_BODY_SMALL = 28;
     private static final int TEXT_SIZE_BODY_TINY = 22;
     private static final int TEXT_SIZE_DIFF_AUTH_TIME = 1;
-
     private static final long DEFAULT_DELAY = 60000L;
     private static final int DEFAULT_SWITCH_ANIM_DURATION = 2000;
     private static final int DEFAULT_BODY_TEXT_SIZE = TEXT_SIZE_BODY_SMALL;
     private static final int DEFAULT_AUTH_TEXT_SIZE = TEXT_SIZE_AUTHOR_SMALL;
     private static final String DEFAULT_REGULAR_TYPEFACE = "fonts/Santana-Bold.ttf";
     private static final String DEFAULT_LIGHT_TYPEFACE = "fonts/Santana.ttf";
-
     private static final String NO_FILE_ERR_MSG = "Could not find the embedded quotes file. Spit it out, the one who ate it! -- Daydreamer";
     private boolean animateSecond;
     private long delay;
@@ -61,6 +60,7 @@ public class DayDreamerQuoth extends DreamService {
     private int numberOfQuotes;
     private boolean showBatteryPct;
     private boolean showBatteryStatus;
+    private List<String> quotes;
     BroadcastReceiver mBatteryLevelReceiver = new mBatteryLevelReceiver();
 
     public DayDreamerQuoth() {
@@ -75,51 +75,25 @@ public class DayDreamerQuoth extends DreamService {
         };
     }
 
-    private int numberOfLines() throws IOException {
+    private void loadQuotes() throws IOException {
+        quotes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                 ctx.getResources().openRawResource(R.raw.quotes)))) {
-            int count = 0;
-            while (reader.readLine() != null) {
-                count++;
+            String line;
+            while ((line = reader.readLine()) != null) {
+                quotes.add(line);
             }
-            if (DEBUG) {
-                Log.i("lineNumbers", String.valueOf(count));
-            }
-            return count;
+        }
+        numberOfQuotes = quotes.size();
+        if (DEBUG) {
+            Log.i("lineNumbers2", String.valueOf(quotes.size()));
         }
     }
-
-    private String randLineFromFile() throws IOException {
-    	String theLine="";
-        if (numberOfQuotes > 0 ) {
-        	InputStream inputStream = ctx.getResources().openRawResource(R.raw.quotes);
-            InputStreamReader inputreader = new InputStreamReader(inputStream);
-            BufferedReader br = new BufferedReader(inputreader);
-	    	Random r = new Random();
-	    	int desiredLine = r.nextInt(numberOfQuotes);
-
-	    	int lineCtr = 0;
-	    	try {
-				while ((theLine = br.readLine()) != null) {
-					if (lineCtr == desiredLine) {
-						break;
-					}
-					lineCtr++;
-				}
-		    	inputStream.close();
-		    	inputreader.close();
-		    	br.close();
-	    	} catch (IOException readLineException) {
-				theLine = NO_FILE_ERR_MSG;
-			} finally {
-		    	inputStream.close();
-		    	inputreader.close();
-		    	br.close();
-	    	}
-        } else {
-        	theLine = NO_FILE_ERR_MSG;
+    private String randLineFromFile() {
+        if (quotes == null || quotes.isEmpty()) {
+            return NO_FILE_ERR_MSG;
         }
-    	return theLine;
+        return quotes.get(new Random().nextInt(numberOfQuotes));
     }
 
     private void setQuote() {
@@ -142,11 +116,8 @@ public class DayDreamerQuoth extends DreamService {
             toHide = secondContent;
         }
 
-		try {
-			qline = randLineFromFile();
-		} catch (IOException e) {
-			qline = NO_FILE_ERR_MSG;
-		}
+        qline = randLineFromFile();
+
 		try {
 			qlineparts = qline.split(" -- ");
         	quoteStr = qlineparts[0];
@@ -357,10 +328,10 @@ public class DayDreamerQuoth extends DreamService {
         	}
         }
         try {
-			numberOfQuotes = numberOfLines();
-		} catch (IOException e) {
-			numberOfQuotes = 0;
-		}
+            loadQuotes();
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
         firstContent = findViewById(R.id.quote_content_first);
         firstContentBodyTextview = (TextView)firstContent.findViewById(R.id.quote_body);
         firstContentAuthTextview = (TextView)firstContent.findViewById(R.id.quote_author);
