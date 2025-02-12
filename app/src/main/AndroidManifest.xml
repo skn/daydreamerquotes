@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!-- // change the versionCode and versionName for release. Last update 06/Oct/2024 // -->
-<manifest android:versionCode="38" android:versionName="4.0.3"
+<!-- // change the versionCode and versionName for release. Last update 12/Feb/2025 // -->
+<manifest android:versionCode="39" android:versionName="4.0.4"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
     <application android:theme="@style/Theme.AppCompat" android:label="@string/app_title" android:icon="@drawable/ic_launcher" android:allowBackup="true">
