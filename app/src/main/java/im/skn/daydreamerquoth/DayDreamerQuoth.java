@@ -81,7 +81,7 @@ public class DayDreamerQuoth extends DreamService {
         }
         numberOfQuotes = quotes.size();
         if (DEBUG) {
-            Log.i("lineNumbers", String.valueOf(quotes.size()));
+            Log.i("DayDreamerQuoth", "Number of lines: "+String.valueOf(quotes.size()));
         }
     }
     private String randLineFromFile() {
@@ -89,10 +89,12 @@ public class DayDreamerQuoth extends DreamService {
             try {
                 loadQuotes();
             } catch (IOException e) {
+                Log.e("DayDreamerQuoth", "Error loading quotes", e);
                 return NO_FILE_ERR_MSG;
             }
         }
         if (quotes.isEmpty()) {
+            Log.e("DayDreamerQuoth", "Quotes file is empty");
             return NO_FILE_ERR_MSG;
         }
         return quotes.get(random.nextInt(numberOfQuotes));
@@ -340,6 +342,7 @@ public class DayDreamerQuoth extends DreamService {
                 delay = Long.parseLong(delay_txt);
         	}
         	catch (NumberFormatException numberformatexception) {
+                Log.e("DayDreamerQuoth", "Error setting delay: ", numberformatexception);
         		delay = DEFAULT_DELAY;
         	}
         }
