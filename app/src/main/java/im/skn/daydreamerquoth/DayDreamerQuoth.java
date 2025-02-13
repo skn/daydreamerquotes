@@ -29,7 +29,7 @@ import java.util.List;
 import java.util.Random;
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
+    protected static final boolean DEBUG = false; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 8000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
