@@ -25,11 +25,96 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
+/**
+ * TypefaceManager - Singleton class to cache and manage Typeface objects
+ * Prevents memory leaks from repeatedly creating Typeface instances
+ */
+class TypefaceManager {
+    private static TypefaceManager instance;
+    private final Map<String, Typeface> typefaceCache = new HashMap<>();
+    
+    private TypefaceManager() {}
+    
+    public static TypefaceManager getInstance() {
+        if (instance == null) {
+            instance = new TypefaceManager();
+        }
+        return instance;
+    }
+    
+    public Typeface getTypeface(Context context, String fontPath) {
+        if (fontPath == null) return Typeface.DEFAULT;
+        
+        Typeface typeface = typefaceCache.get(fontPath);
+        if (typeface == null) {
+            try {
+                typeface = Typeface.createFromAsset(context.getAssets(), fontPath);
+                typefaceCache.put(fontPath, typeface);
+            } catch (Exception e) {
+                Log.w("TypefaceManager", "Failed to load font: " + fontPath, e);
+                typeface = Typeface.DEFAULT;
+            }
+        }
+        return typeface;
+    }
+    
+    public void clearCache() {
+        typefaceCache.clear();
+    }
+    
+    public int getCacheSize() {
+        return typefaceCache.size();
+    }
+    
+    /**
+     * Get a pair of typefaces (regular and light) for a given font family
+     */
+    public Typeface[] getTypefacePair(Context context, String fontFamily) {
+        String regularPath, lightPath;
+        
+        switch (fontFamily != null ? fontFamily : "Santana") {
+            case "Roboto":
+                regularPath = "fonts/Roboto-Regular.ttf";
+                lightPath = "fonts/Roboto-Light.ttf";
+                break;
+            case "Santana":
+                regularPath = "fonts/Santana-Bold.ttf";
+                lightPath = "fonts/Santana.ttf";
+                break;
+            case "DroidSerif":
+                regularPath = "fonts/DroidSerif-Bold.ttf";
+                lightPath = "fonts/DroidSerif.ttf";
+                break;
+            case "OpenSans":
+                regularPath = "fonts/OpenSans-Regular.ttf";
+                lightPath = "fonts/OpenSans-Light.ttf";
+                break;
+            case "Typewriter":
+                regularPath = "fonts/MaszynaAEG.ttf";
+                lightPath = "fonts/MaszynaRoyalLight.ttf";
+                break;
+            default:
+                regularPath = "fonts/Santana-Bold.ttf";
+                lightPath = "fonts/Santana.ttf";
+                break;
+        }
+        
+        return new Typeface[]{
+            getTypeface(context, regularPath),
+            getTypeface(context, lightPath)
+        };
+    }
+}
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = false; /* DEBUG is set to protected so as to be accessible from unit test */
+    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 8000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
@@ -60,6 +145,25 @@ public class DayDreamerQuoth extends DreamService {
     private boolean showBatteryStatus;
     private List<String> quotes;
     BroadcastReceiver mBatteryLevelReceiver = new mBatteryLevelReceiver();
+    
+    // Asynchronous quotes loading state management
+    private volatile boolean isQuotesLoaded = false;
+    private volatile boolean isLoadingQuotes = false;
+    private ExecutorService quotesExecutor;
+    private boolean pendingQuoteRequest = false;
+    
+    // Cached view references to avoid repeated findViewById calls
+    private TextView firstContentBodyTextView;
+    private TextView firstContentAuthTextView;
+    private TextView secondContentBodyTextView;
+    private TextView secondContentAuthTextView;
+    private TextView contentTimeView;
+    private TextView contentDateView;
+    private TextView contentBatteryPctView;
+    private ImageView batteryStatusImageView;
+    private TextView batteryChrgTypeTextView;
+    private View contentBatteryStatusView;
+    
     private static final Random random = new Random();
 
     public DayDreamerQuoth() {
@@ -70,34 +174,114 @@ public class DayDreamerQuoth extends DreamService {
         showQuoteRunnable = this::showQuote;
     }
 
-    private void loadQuotes() throws IOException {
-        quotes = new ArrayList<>();
+    /**
+     * Synchronous quotes loading method (used by background thread)
+     */
+    private List<String> loadQuotesFromFile() throws IOException {
+        List<String> loadedQuotes = new ArrayList<>();
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
                 this.getResources().openRawResource(R.raw.quotes)))) {
             String line;
             while ((line = reader.readLine()) != null) {
-                quotes.add(line);
+                loadedQuotes.add(line);
             }
         }
-        numberOfQuotes = quotes.size();
-        if (DEBUG) {
-            Log.i("DayDreamerQuoth", "Number of lines: "+String.valueOf(quotes.size()));
-        }
+        return loadedQuotes;
     }
-    private String randLineFromFile() {
-        if (quotes == null) {  // Lazy-load if quotes have not been loaded yet.
+    
+    /**
+     * Asynchronous quotes loading using ExecutorService
+     * Loads quotes in background thread and updates UI when complete
+     */
+    private void loadQuotesAsync() {
+        if (isLoadingQuotes || isQuotesLoaded) {
+            return; // Already loading or loaded
+        }
+        
+        isLoadingQuotes = true;
+        
+        if (quotesExecutor == null) {
+            quotesExecutor = Executors.newSingleThreadExecutor();
+        }
+        
+        if (DEBUG) {
+            Log.d("DayDreamerQuoth", "Starting async quotes loading...");
+        }
+        
+        quotesExecutor.execute(() -> {
             try {
-                loadQuotes();
+                // Load quotes on background thread
+                List<String> loadedQuotes = loadQuotesFromFile();
+                
+                // Switch to main thread for UI update
+                handler.post(() -> {
+                    quotes = loadedQuotes;
+                    numberOfQuotes = quotes.size();
+                    isQuotesLoaded = true;
+                    isLoadingQuotes = false;
+                    
+                    if (DEBUG) {
+                        Log.i("DayDreamerQuoth", "Quotes loaded asynchronously: " + numberOfQuotes + " quotes");
+                    }
+                    
+                    // If there was a pending quote request, fulfill it now
+                    if (pendingQuoteRequest) {
+                        if (DEBUG) {
+                            Log.d("DayDreamerQuoth", "Loading completed, refreshing quote immediately");
+                        }
+                        pendingQuoteRequest = false;
+                        // Cancel any existing delayed quote update and show immediately
+                        handler.removeCallbacks(showQuoteRunnable);
+                        setQuote(); // Show the first real quote immediately
+                        // Resume normal quote cycling
+                        handler.postDelayed(showQuoteRunnable, delay);
+                    } else {
+                        if (DEBUG) {
+                            Log.d("DayDreamerQuoth", "Loading completed but no pending request");
+                        }
+                    }
+                });
+                
             } catch (IOException e) {
-                Log.e("DayDreamerQuoth", "Error loading quotes", e);
-                return NO_FILE_ERR_MSG;
+                // Handle error on main thread
+                handler.post(() -> {
+                    Log.e("DayDreamerQuoth", "Error loading quotes asynchronously", e);
+                    isLoadingQuotes = false;
+                    // Keep quotes as null to trigger fallback message
+                });
+            }
+        });
+    }
+    /**
+     * Get random quote with asynchronous loading support
+     * Returns placeholder message while quotes are loading in background
+     */
+    private String randLineFromFile() {
+        // If quotes are fully loaded, return random quote
+        if (isQuotesLoaded && quotes != null && !quotes.isEmpty()) {
+            return quotes.get(random.nextInt(numberOfQuotes));
+        }
+        
+        // If not loading yet, start async loading
+        if (!isLoadingQuotes && !isQuotesLoaded) {
+            if (DEBUG) {
+                Log.d("DayDreamerQuoth", "Triggering async quotes loading");
+            }
+            loadQuotesAsync();
+            // Only set pending if not already set
+            if (!pendingQuoteRequest) {
+                pendingQuoteRequest = true;
             }
         }
-        if (quotes.isEmpty()) {
-            Log.e("DayDreamerQuoth", "Quotes file is empty");
-            return NO_FILE_ERR_MSG;
+        
+        // Return appropriate message based on loading state
+        if (isLoadingQuotes) {
+            return "Loading inspirational quotes... ⏳ -- Daydreamer";
+        } else if (quotes != null && quotes.isEmpty()) {
+            return "No quotes found in file -- Daydreamer";
+        } else {
+            return "Unable to load quotes at this time -- Daydreamer";
         }
-        return quotes.get(random.nextInt(numberOfQuotes));
     }
 
     private void setQuote() {
@@ -131,8 +315,16 @@ public class DayDreamerQuoth extends DreamService {
         finalQuoteStr = resources.getString(R.string.lbl_quote_body, quoteStr);
         finalAuthStr = resources.getString(R.string.lbl_quote_author, authStr);
 
-        ((TextView) toShow.findViewById(R.id.quote_body)).setText(finalQuoteStr);
-        ((TextView) toShow.findViewById(R.id.quote_author)).setText(finalAuthStr);
+        // Use cached view references instead of findViewById
+        TextView bodyTextView = (toShow == firstContent) ? firstContentBodyTextView : secondContentBodyTextView;
+        TextView authTextView = (toShow == firstContent) ? firstContentAuthTextView : secondContentAuthTextView;
+        
+        if (bodyTextView != null) {
+            bodyTextView.setText(finalQuoteStr);
+        }
+        if (authTextView != null) {
+            authTextView.setText(finalAuthStr);
+        }
 /*
         AnimatorSet animatorSet = new AnimatorSet();
         animatorSet.playTogether(
@@ -198,13 +390,11 @@ public class DayDreamerQuoth extends DreamService {
     }
 
     private void setBatteryDetails(int status, int batteryPct,Intent batteryStatus) {
-        if (showBatteryPct) {
+        if (showBatteryPct && contentBatteryPctView != null) {
             String finalBatteryPct = getResources().getString(R.string.lbl_battery_pct, batteryPct);
-            ((TextView) findViewById(R.id.batteryPct)).setText(finalBatteryPct);
+            contentBatteryPctView.setText(finalBatteryPct);
         }
-        if (showBatteryStatus) {
-            ImageView batteryStatusImageView = findViewById(R.id.batteryStatus);
-            TextView batteryChrgTypeTextView = findViewById(R.id.batteryChrgType);
+        if (showBatteryStatus && batteryStatusImageView != null && batteryChrgTypeTextView != null) {
             if (status == BatteryManager.BATTERY_STATUS_CHARGING) {
                 if (batteryPct <= 20) {
                     batteryStatusImageView.setImageResource(R.drawable.ic_battery_charging_20);
@@ -258,8 +448,24 @@ public class DayDreamerQuoth extends DreamService {
 
     private void showQuote() {
         setQuote();
-        long l = delay;
-        handler.postDelayed(showQuoteRunnable, l);
+        
+        // If we're showing a loading message, check more frequently
+        long nextDelay = delay;
+        if (isLoadingQuotes && !isQuotesLoaded) {
+            // Check every 2 seconds while loading instead of full delay
+            nextDelay = 2000L;
+            if (DEBUG) {
+                Log.d("DayDreamerQuoth", "Using short delay while loading quotes");
+            }
+        } else if (isQuotesLoaded && pendingQuoteRequest) {
+            // Failsafe: If quotes are loaded but we still have a pending request, clear it
+            if (DEBUG) {
+                Log.d("DayDreamerQuoth", "Failsafe: Clearing stale pending request");
+            }
+            pendingQuoteRequest = false;
+        }
+        
+        handler.postDelayed(showQuoteRunnable, nextDelay);
     }
 
     public void onAttachedToWindow() {
@@ -267,51 +473,20 @@ public class DayDreamerQuoth extends DreamService {
         setInteractive(true);
         setFullscreen(true);
         setContentView(R.layout.dream_quotes);
-        Typeface regularTypeface = Typeface.createFromAsset(getAssets(), DEFAULT_REGULAR_TYPEFACE);
-        Typeface lightTypeface = Typeface.createFromAsset(getAssets(), DEFAULT_LIGHT_TYPEFACE);
-        int quote_text_size = DEFAULT_BODY_TEXT_SIZE;
-        int author_text_size = DEFAULT_AUTH_TEXT_SIZE;
+        // Get cached typefaces efficiently
         SharedPreferences prefs = QuothPrefs.get(this);
         String delay_txt = prefs.getString("PREF_DELAY_BETWEEN_QUOTES", null);
         String txt_size = prefs.getString("PREF_TEXT_SIZE", null);
         String font_family = prefs.getString("PREF_FONT_FAMILY", null);
         
-        TextView firstContentBodyTextview;
-        TextView firstContentAuthTextview;
-        TextView secondContentBodyTextview;
-        TextView secondContentAuthTextview;
-
-        TextView contentTimeView;
-        TextView contentDateView;
-        TextView contentBatteryPctView;
-
-        //ImageView batteryStatusView;
-        TextView chargeTypeView;
-
-        if (!TextUtils.isEmpty(font_family)) {
-            switch (font_family) {
-                case "Roboto":
-                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Regular.ttf");
-                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/Roboto-Light.ttf");
-                    break;
-                case "Santana":
-                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/Santana-Bold.ttf");
-                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/Santana.ttf");
-                    break;
-                case "DroidSerif":
-                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/DroidSerif-Bold.ttf");
-                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/DroidSerif.ttf");
-                    break;
-                case "OpenSans":
-                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Regular.ttf");
-                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/OpenSans-Light.ttf");
-                    break;
-                case "Typewriter":
-                    regularTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaAEG.ttf");
-                    lightTypeface = Typeface.createFromAsset(getAssets(), "fonts/MaszynaRoyalLight.ttf");
-                    break;
-            }
-        }
+        // Use TypefaceManager to get cached typefaces
+        TypefaceManager typefaceManager = TypefaceManager.getInstance();
+        Typeface[] typefaces = typefaceManager.getTypefacePair(this, font_family);
+        Typeface regularTypeface = typefaces[0];
+        Typeface lightTypeface = typefaces[1];
+        
+        int quote_text_size = DEFAULT_BODY_TEXT_SIZE;
+        int author_text_size = DEFAULT_AUTH_TEXT_SIZE;
         if (!TextUtils.isEmpty(txt_size)) {
             switch (txt_size) {
                 case "0":
@@ -347,83 +522,117 @@ public class DayDreamerQuoth extends DreamService {
         	}
         }
 
+        // Cache all view references for performance
         firstContent = findViewById(R.id.quote_content_first);
-        firstContentBodyTextview = firstContent.findViewById(R.id.quote_body);
-        firstContentAuthTextview = firstContent.findViewById(R.id.quote_author);
-        firstContentBodyTextview.setTypeface(regularTypeface);
-        firstContentAuthTextview.setTypeface(lightTypeface);
-        firstContentBodyTextview.setTextSize(2, quote_text_size);
-        firstContentAuthTextview.setTextSize(2, author_text_size);
-
-        secondContent = findViewById(R.id.quote_content_second);
-        secondContentBodyTextview = secondContent.findViewById(R.id.quote_body);
-        secondContentAuthTextview = secondContent.findViewById(R.id.quote_author);
-        secondContentBodyTextview.setTypeface(regularTypeface);
-        secondContentAuthTextview.setTypeface(lightTypeface);
-        secondContentBodyTextview.setTextSize(2, quote_text_size);
-        secondContentAuthTextview.setTextSize(2, author_text_size);
-
-        contentTimeView = findViewById(R.id.time);
-        contentTimeView.setTypeface(regularTypeface);
-        contentTimeView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
-
-        contentDateView = findViewById(R.id.date);
-        contentDateView.setTypeface(regularTypeface);
-        contentDateView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
-
-        View contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
-
-        contentBatteryPctView = findViewById(R.id.batteryPct);
-        contentBatteryPctView.setTypeface(regularTypeface);
-        contentBatteryPctView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
-
-        chargeTypeView = contentBatteryStatusView.findViewById(R.id.batteryChrgType);
-        chargeTypeView.setTypeface(regularTypeface);
-        chargeTypeView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
-
-        boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
-        if (!showTime){
-            contentTimeView.setVisibility(View.GONE);
-        }
-        else {
-            contentTimeView.setVisibility(View.VISIBLE);
-            contentTimeView.setTextColor(0XFFFFFFFF);
-        }
-        boolean showDate = prefs.getBoolean("PREF_SHOW_DATE", true);
-        if (!showDate){
-            contentDateView.setVisibility(View.GONE);
-            if (showTime) {
-                // If time is shown but not date
-                RelativeLayout.LayoutParams timeLayoutParams = new RelativeLayout.LayoutParams(
-                        RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                // remove alignment to the date since date is not shown
-                timeLayoutParams.removeRule(RelativeLayout.ABOVE);
-                // instead align the time text just like the date - center and bottom of layout
-                timeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                timeLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                contentTimeView.setLayoutParams(timeLayoutParams);
+        if (firstContent != null) {
+            firstContentBodyTextView = firstContent.findViewById(R.id.quote_body);
+            firstContentAuthTextView = firstContent.findViewById(R.id.quote_author);
+            if (firstContentBodyTextView != null) {
+                firstContentBodyTextView.setTypeface(regularTypeface);
+                firstContentBodyTextView.setTextSize(2, quote_text_size);
+            }
+            if (firstContentAuthTextView != null) {
+                firstContentAuthTextView.setTypeface(lightTypeface);
+                firstContentAuthTextView.setTextSize(2, author_text_size);
             }
         }
-        else {
-            contentDateView.setVisibility(View.VISIBLE);
-            contentDateView.setTextColor(0XFFFFFFFF);
+
+        secondContent = findViewById(R.id.quote_content_second);
+        if (secondContent != null) {
+            secondContentBodyTextView = secondContent.findViewById(R.id.quote_body);
+            secondContentAuthTextView = secondContent.findViewById(R.id.quote_author);
+            if (secondContentBodyTextView != null) {
+                secondContentBodyTextView.setTypeface(regularTypeface);
+                secondContentBodyTextView.setTextSize(2, quote_text_size);
+            }
+            if (secondContentAuthTextView != null) {
+                secondContentAuthTextView.setTypeface(lightTypeface);
+                secondContentAuthTextView.setTextSize(2, author_text_size);
+            }
+        }
+
+        contentTimeView = findViewById(R.id.time);
+        if (contentTimeView != null) {
+            contentTimeView.setTypeface(regularTypeface);
+            contentTimeView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
+        }
+
+        contentDateView = findViewById(R.id.date);
+        if (contentDateView != null) {
+            contentDateView.setTypeface(regularTypeface);
+            contentDateView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
+        }
+
+        contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
+
+        contentBatteryPctView = findViewById(R.id.batteryPct);
+        if (contentBatteryPctView != null) {
+            contentBatteryPctView.setTypeface(regularTypeface);
+            contentBatteryPctView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
+        }
+
+        if (contentBatteryStatusView != null) {
+            batteryChrgTypeTextView = contentBatteryStatusView.findViewById(R.id.batteryChrgType);
+            if (batteryChrgTypeTextView != null) {
+                batteryChrgTypeTextView.setTypeface(regularTypeface);
+                batteryChrgTypeTextView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
+            }
+        }
+
+        // Cache battery status ImageView for setBatteryDetails
+        batteryStatusImageView = findViewById(R.id.batteryStatus);
+
+        boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
+        if (contentTimeView != null) {
+            if (!showTime){
+                contentTimeView.setVisibility(View.GONE);
+            }
+            else {
+                contentTimeView.setVisibility(View.VISIBLE);
+                contentTimeView.setTextColor(0XFFFFFFFF);
+            }
+        }
+        boolean showDate = prefs.getBoolean("PREF_SHOW_DATE", true);
+        if (contentDateView != null) {
+            if (!showDate){
+                contentDateView.setVisibility(View.GONE);
+                if (showTime && contentTimeView != null) {
+                    // If time is shown but not date
+                    RelativeLayout.LayoutParams timeLayoutParams = new RelativeLayout.LayoutParams(
+                            RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                    // remove alignment to the date since date is not shown
+                    timeLayoutParams.removeRule(RelativeLayout.ABOVE);
+                    // instead align the time text just like the date - center and bottom of layout
+                    timeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                    timeLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                    contentTimeView.setLayoutParams(timeLayoutParams);
+                }
+            }
+            else {
+                contentDateView.setVisibility(View.VISIBLE);
+                contentDateView.setTextColor(0XFFFFFFFF);
+            }
         }
 
         showBatteryPct = prefs.getBoolean("PREF_SHOW_BATTERY_PCT", true);
-        if (!showBatteryPct){
-            contentBatteryPctView.setVisibility(View.GONE);
-        }
-        else {
-            contentBatteryPctView.setVisibility(View.VISIBLE);
-            contentBatteryPctView.setTextColor(0XFFFFFFFF);
+        if (contentBatteryPctView != null) {
+            if (!showBatteryPct){
+                contentBatteryPctView.setVisibility(View.GONE);
+            }
+            else {
+                contentBatteryPctView.setVisibility(View.VISIBLE);
+                contentBatteryPctView.setTextColor(0XFFFFFFFF);
+            }
         }
 
         showBatteryStatus = prefs.getBoolean("PREF_SHOW_BATTERY_STATUS", true);
-        if (!showBatteryStatus){
-            contentBatteryStatusView.setVisibility(View.GONE);
-        }
-        else {
-            contentBatteryStatusView.setVisibility(View.VISIBLE);
+        if (contentBatteryStatusView != null) {
+            if (!showBatteryStatus){
+                contentBatteryStatusView.setVisibility(View.GONE);
+            }
+            else {
+                contentBatteryStatusView.setVisibility(View.VISIBLE);
+            }
         }
 
         shortAnimationDuration = DEFAULT_SWITCH_ANIM_DURATION;
@@ -439,6 +648,16 @@ public class DayDreamerQuoth extends DreamService {
         int batteryPct = level * 100 / scale;
         setBatteryDetails(status, batteryPct, batteryStatus);
         batteryLevelRcvr();
+
+        // Start loading quotes asynchronously as early as possible
+        if (!isQuotesLoaded && !isLoadingQuotes) {
+            if (DEBUG) {
+                Log.d("DayDreamerQuoth", "Pre-loading quotes in onAttachedToWindow");
+            }
+            loadQuotesAsync();
+            // Set pending request flag early to ensure loading completion triggers refresh
+            pendingQuoteRequest = true;
+        }
 
         showQuote();
     }
@@ -482,10 +701,43 @@ public class DayDreamerQuoth extends DreamService {
             }
         }
         
-        // Clear memory-intensive data
-        if (quotes != null) {
-            quotes.clear();
-            quotes = null;
+        // Clean up ExecutorService
+        if (quotesExecutor != null && !quotesExecutor.isShutdown()) {
+            quotesExecutor.shutdown();
+            quotesExecutor = null;
+            if (DEBUG) {
+                Log.d("DayDreamerQuoth", "ExecutorService shutdown");
+            }
+        }
+        
+        // Reset loading state
+        isLoadingQuotes = false;
+        pendingQuoteRequest = false;
+        // Note: Keep isQuotesLoaded=true and quotes data for reuse across activations
+        
+        // Clear cached view references to prevent memory leaks
+        firstContentBodyTextView = null;
+        firstContentAuthTextView = null;
+        secondContentBodyTextView = null;
+        secondContentAuthTextView = null;
+        contentTimeView = null;
+        contentDateView = null;
+        contentBatteryPctView = null;
+        batteryStatusImageView = null;
+        batteryChrgTypeTextView = null;
+        contentBatteryStatusView = null;
+        
+        // Optional: Clear quotes if memory is critical (usually not needed)
+        // if (quotes != null) {
+        //     quotes.clear();
+        //     quotes = null;
+        //     isQuotesLoaded = false;
+        // }
+        
+        // Optional: Log TypefaceManager cache status for debugging
+        if (DEBUG) {
+            TypefaceManager typefaceManager = TypefaceManager.getInstance();
+            Log.d("DayDreamerQuoth", "TypefaceManager cache size: " + typefaceManager.getCacheSize());
         }
         
         // Call super last
