@@ -2,8 +2,6 @@ package im.skn.daydreamerquoth;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
-import android.animation.AnimatorSet;
-import android.animation.ObjectAnimator;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -65,9 +63,6 @@ class TypefaceManager {
         return typeface;
     }
     
-    public void clearCache() {
-        typefaceCache.clear();
-    }
     
     public int getCacheSize() {
         return typefaceCache.size();
@@ -129,9 +124,6 @@ public class DayDreamerQuoth extends DreamService {
     private static final int DEFAULT_SWITCH_ANIM_DURATION = 2000;
     private static final int DEFAULT_BODY_TEXT_SIZE = TEXT_SIZE_BODY_SMALL;
     private static final int DEFAULT_AUTH_TEXT_SIZE = TEXT_SIZE_AUTHOR_SMALL;
-    private static final String DEFAULT_REGULAR_TYPEFACE = "fonts/Santana-Bold.ttf";
-    private static final String DEFAULT_LIGHT_TYPEFACE = "fonts/Santana.ttf";
-    private static final String NO_FILE_ERR_MSG = "Could not find the embedded quotes file. Spit it out, the one who ate it! -- Daydreamer";
     private boolean animateSecond;
     private long delay;
     private View firstContent;
