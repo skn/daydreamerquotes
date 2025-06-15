@@ -444,8 +444,51 @@ public class DayDreamerQuoth extends DreamService {
     }
 
     public void onDetachedFromWindow() {
+        // Clean up Handler callbacks FIRST to stop quote cycling
+        if (handler != null) {
+            handler.removeCallbacks(showQuoteRunnable);
+            handler.removeCallbacksAndMessages(null);
+        }
+        
+        // Clean up BroadcastReceiver safely
+        try {
+            if (mBatteryLevelReceiver != null) {
+                this.unregisterReceiver(mBatteryLevelReceiver);
+            }
+        } catch (IllegalArgumentException e) {
+            // Receiver was not registered - this is expected sometimes
+            if (DEBUG) {
+                Log.w("DayDreamerQuoth", "BroadcastReceiver was not registered", e);
+            }
+        }
+        
+        // Cancel any ongoing animations to prevent callbacks after detachment
+        try {
+            if (firstContent != null) {
+                firstContent.clearAnimation();
+                firstContent.animate().cancel();
+            }
+            if (secondContent != null) {
+                secondContent.clearAnimation();
+                secondContent.animate().cancel();
+            }
+            if (toHide != null) {
+                toHide.clearAnimation();
+                toHide.animate().cancel();
+            }
+        } catch (Exception e) {
+            if (DEBUG) {
+                Log.w("DayDreamerQuoth", "Error clearing animations", e);
+            }
+        }
+        
+        // Clear memory-intensive data
+        if (quotes != null) {
+            quotes.clear();
+            quotes = null;
+        }
+        
+        // Call super last
         super.onDetachedFromWindow();
-        handler.removeCallbacks(showQuoteRunnable);
-        this.unregisterReceiver(mBatteryLevelReceiver);
     }
 }
