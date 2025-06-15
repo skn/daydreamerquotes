@@ -115,7 +115,7 @@ class TypefaceManager {
 
 public class DayDreamerQuoth extends DreamService {
     protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
-    private static final long DEBUG_DELAY_QUOTE = 8000L;
+    private static final long DEBUG_DELAY_QUOTE = 3000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
     private static final int TEXT_SIZE_AUTHOR_SMALL = 24;
@@ -378,11 +378,14 @@ public class DayDreamerQuoth extends DreamService {
         public void onReceive(Context context, Intent intent) {
             int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
             int scale = intent.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-            int batteryPct = level * 100 / scale;
+            int batteryPct = (scale > 0) ? (level * 100 / scale) : 0;
 
             IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
             Intent batteryStatus = registerReceiver(null, ifilter);
-            assert batteryStatus != null;
+            if (batteryStatus == null) {
+                Log.w("DayDreamerQuoth", "Failed to get battery status intent");
+                return;
+            }
             int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
 
             setBatteryDetails(status, batteryPct, batteryStatus);
@@ -513,8 +516,12 @@ public class DayDreamerQuoth extends DreamService {
         	delay = DEBUG_DELAY_QUOTE;
         } else {
         	try {
-                assert delay_txt != null;
-                delay = Long.parseLong(delay_txt);
+                if (delay_txt == null) {
+                    Log.w("DayDreamerQuoth", "Delay preference is null, using default");
+                    delay = DEFAULT_DELAY;
+                } else {
+                    delay = Long.parseLong(delay_txt);
+                }
         	}
         	catch (NumberFormatException numberformatexception) {
                 Log.e("DayDreamerQuoth", "Error setting delay: ", numberformatexception);
@@ -640,13 +647,17 @@ public class DayDreamerQuoth extends DreamService {
         // Are we charging / charged?
         IntentFilter ifilter = new IntentFilter(Intent.ACTION_BATTERY_CHANGED);
         Intent batteryStatus = registerReceiver(null, ifilter);
-        assert batteryStatus != null;
-        int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
-
-        int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
-        int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
-        int batteryPct = level * 100 / scale;
-        setBatteryDetails(status, batteryPct, batteryStatus);
+        if (batteryStatus == null) {
+            Log.w("DayDreamerQuoth", "Failed to get battery status intent in onAttachedToWindow");
+            // Continue without battery status - not critical for app functionality
+        } else {
+            int status = batteryStatus.getIntExtra(BatteryManager.EXTRA_STATUS, -1);
+            
+            int level = batteryStatus.getIntExtra(BatteryManager.EXTRA_LEVEL, -1);
+            int scale = batteryStatus.getIntExtra(BatteryManager.EXTRA_SCALE, -1);
+            int batteryPct = (scale > 0) ? (level * 100 / scale) : 0;
+            setBatteryDetails(status, batteryPct, batteryStatus);
+        }
         batteryLevelRcvr();
 
         // Start loading quotes asynchronously as early as possible
@@ -685,15 +696,15 @@ public class DayDreamerQuoth extends DreamService {
         try {
             if (firstContent != null) {
                 firstContent.clearAnimation();
-                firstContent.animate().cancel().setListener(null);
+                firstContent.animate().setListener(null).cancel();
             }
             if (secondContent != null) {
                 secondContent.clearAnimation();
-                secondContent.animate().cancel().setListener(null);
+                secondContent.animate().setListener(null).cancel();
             }
             if (toHide != null) {
                 toHide.clearAnimation();
-                toHide.animate().cancel().setListener(null);
+                toHide.animate().setListener(null).cancel();
             }
         } catch (Exception e) {
             if (DEBUG) {
