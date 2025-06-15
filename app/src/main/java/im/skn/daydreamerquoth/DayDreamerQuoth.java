@@ -681,19 +681,19 @@ public class DayDreamerQuoth extends DreamService {
             }
         }
         
-        // Cancel any ongoing animations to prevent callbacks after detachment
+        // Cancel any ongoing animations and clear listeners to prevent callbacks after detachment
         try {
             if (firstContent != null) {
                 firstContent.clearAnimation();
-                firstContent.animate().cancel();
+                firstContent.animate().cancel().setListener(null);
             }
             if (secondContent != null) {
                 secondContent.clearAnimation();
-                secondContent.animate().cancel();
+                secondContent.animate().cancel().setListener(null);
             }
             if (toHide != null) {
                 toHide.clearAnimation();
-                toHide.animate().cancel();
+                toHide.animate().cancel().setListener(null);
             }
         } catch (Exception e) {
             if (DEBUG) {
