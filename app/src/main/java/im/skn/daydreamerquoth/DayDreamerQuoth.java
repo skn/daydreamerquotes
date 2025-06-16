@@ -317,21 +317,7 @@ public class DayDreamerQuoth extends DreamService {
         if (authTextView != null) {
             authTextView.setText(finalAuthStr);
         }
-/*
-        AnimatorSet animatorSet = new AnimatorSet();
-        animatorSet.playTogether(
-                ObjectAnimator.ofFloat(toShow, "alpha", 0f, 1f).setDuration(shortAnimationDuration),
-                ObjectAnimator.ofFloat(toHide, "alpha", 1f, 0f).setDuration(shortAnimationDuration)
-        );
-        animatorSet.addListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                toHide.setVisibility(View.GONE);
-            }
-        });
-        toShow.setVisibility(View.VISIBLE);
-        animatorSet.start();*/
-
+        
         // https://developer.android.com/develop/ui/views/animations/reveal-or-hide-view#CrossfadeViews
         // Initially hide the toShow view.
         toShow.setVisibility(View.GONE);
@@ -518,7 +504,7 @@ public class DayDreamerQuoth extends DreamService {
         	}
         	catch (NumberFormatException numberformatexception) {
                 Log.e("DayDreamerQuoth", "Error setting delay: ", numberformatexception);
-        		delay = DEFAULT_DELAY;
+                delay = DEFAULT_DELAY;
         	}
         }
 
