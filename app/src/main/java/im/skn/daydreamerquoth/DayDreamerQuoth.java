@@ -465,7 +465,8 @@ public class DayDreamerQuoth extends DreamService {
 
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
-        setInteractive(true);
+        setInteractive(true);     // Allow touch events
+        setScreenBright(true);    // Keep screen bright/awake
         setFullscreen(true);
         setContentView(R.layout.dream_quotes);
         // Get cached typefaces efficiently
