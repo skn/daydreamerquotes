@@ -416,6 +416,10 @@ public class DayDreamerQuoth extends DreamService {
      * Calculate next delay based on timing mode preference
      */
     private long calculateNextDelay() {
+        if (DEBUG) {
+            return DEBUG_DELAY_QUOTE; // Always use debug delay when debugging
+        }
+        
         SharedPreferences prefs = QuothPrefs.get(this);
         String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:fixed");
         
@@ -671,12 +675,8 @@ public class DayDreamerQuoth extends DreamService {
                     break;
             }
         }
-        if (DEBUG) {
-        	delay = DEBUG_DELAY_QUOTE;
-        } else {
-            // Parse the new combined timing preference format
-            parseTimingPreference();
-        }
+        // Parse the combined timing preference format
+        parseTimingPreference();
 
         // Cache all view references for performance
         firstContent = findViewById(R.id.quote_content_first);
