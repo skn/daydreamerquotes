@@ -127,9 +127,6 @@ public class DayDreamerQuoth extends DreamService {
     
     // Smart timing constants
     private static final int DEFAULT_READING_WPM = 200;        // Average adult reading speed
-    private static final int SLOW_READING_WPM = 150;           // Slow readers
-    private static final int FAST_READING_WPM = 250;           // Fast readers  
-    private static final int SPEED_READING_WPM = 300;          // Speed readers
     private static final long MIN_DISPLAY_TIME = 5000L;        // 5 seconds minimum
     private static final long MAX_DISPLAY_TIME = 180000L;      // 3 minutes maximum
     private static final float REFLECTION_TIME_RATIO = 0.3f;   // 30% additional time for reflection
