@@ -79,11 +79,10 @@ class TypefaceManager {
                 regularPath = "fonts/Roboto-Regular.ttf";
                 lightPath = "fonts/Roboto-Light.ttf";
                 break;
-            /* commenting out as Santana is the default. So case is unnecessary here
             case "Santana":
                 regularPath = "fonts/Santana-Bold.ttf";
                 lightPath = "fonts/Santana.ttf";
-                break;*/
+                break;
             case "DroidSerif":
                 regularPath = "fonts/DroidSerif-Bold.ttf";
                 lightPath = "fonts/DroidSerif.ttf";
