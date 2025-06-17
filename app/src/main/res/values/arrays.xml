@@ -1,14 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string-array name="array_delay_names">
-        <item>1 minute</item>
-        <item>5 minutes</item>
-        <item>10 minutes</item>
+        <item>1 minute (Fixed)</item>
+        <item>2 minutes (Fixed)</item>
+        <item>5 minutes (Fixed)</item>
+        <item>Smart Timing (Adaptive)</item>
+        <item>Smart + 1 min minimum (Hybrid)</item>
+        <item>Smart + 2 min minimum (Hybrid)</item>
     </string-array>
     <string-array name="array_delay_values">
-        <item>60000</item>
-        <item>300000</item>
-        <item>600000</item>
+        <item>60000:fixed</item>
+        <item>120000:fixed</item>
+        <item>300000:fixed</item>
+        <item>0:smart</item>
+        <item>60000:hybrid</item>
+        <item>120000:hybrid</item>
     </string-array>
     <string-array name="array_text_size_names">
         <item>Tiny</item>
@@ -35,5 +41,17 @@
         <item>DroidSerif</item>
         <item>OpenSans</item>
         <item>Typewriter</item>
+    </string-array>
+    <string-array name="array_reading_speed_names">
+        <item>Slow Reader (150 WPM)</item>
+        <item>Average Reader (200 WPM)</item>
+        <item>Fast Reader (250 WPM)</item>
+        <item>Speed Reader (300 WPM)</item>
+    </string-array>
+    <string-array name="array_reading_speed_values">
+        <item>150</item>
+        <item>200</item>
+        <item>250</item>
+        <item>300</item>
     </string-array>
 </resources>

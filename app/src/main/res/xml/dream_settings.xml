@@ -6,9 +6,17 @@
         android:title="Delay between quotes"
         android:key="PREF_DELAY_BETWEEN_QUOTES"
         android:summary="%s"
-        android:defaultValue="60000"
+        android:defaultValue="60000:fixed"
         android:dialogTitle="Delay"
         android:entryValues="@array/array_delay_values" />
+    <ListPreference
+        android:entries="@array/array_reading_speed_names"
+        android:title="Reading speed (for Smart timing)"
+        android:key="PREF_READING_SPEED"
+        android:summary="%s"
+        android:defaultValue="200"
+        android:dialogTitle="Reading Speed"
+        android:entryValues="@array/array_reading_speed_values" />
     <ListPreference
         android:entries="@array/array_font_family_names"
         android:title="Text font"

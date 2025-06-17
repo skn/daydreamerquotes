@@ -12,6 +12,7 @@ public class QuothPrefs extends AppCompatActivity {
     public static final String PREF_DELAY_BETWEEN_QUOTES = "PREF_DELAY_BETWEEN_QUOTES";
     public static final String PREF_TEXT_SIZE = "PREF_TEXT_SIZE";
     public static final String PREF_FONT_FAMILY = "PREF_FONT_FAMILY";
+    public static final String PREF_READING_SPEED = "PREF_READING_SPEED";
 
     public QuothPrefs() {
 

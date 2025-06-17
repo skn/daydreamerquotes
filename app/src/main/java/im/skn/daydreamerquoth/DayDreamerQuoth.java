@@ -109,7 +109,7 @@ class TypefaceManager {
 }
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
+    protected static final boolean DEBUG = false; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 3000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
@@ -124,6 +124,19 @@ public class DayDreamerQuoth extends DreamService {
     private static final int DEFAULT_SWITCH_ANIM_DURATION = 2000;
     private static final int DEFAULT_BODY_TEXT_SIZE = TEXT_SIZE_BODY_SMALL;
     private static final int DEFAULT_AUTH_TEXT_SIZE = TEXT_SIZE_AUTHOR_SMALL;
+    
+    // Smart timing constants
+    private static final int DEFAULT_READING_WPM = 200;        // Average adult reading speed
+    private static final int SLOW_READING_WPM = 150;           // Slow readers
+    private static final int FAST_READING_WPM = 250;           // Fast readers  
+    private static final int SPEED_READING_WPM = 300;          // Speed readers
+    private static final long MIN_DISPLAY_TIME = 5000L;        // 5 seconds minimum
+    private static final long MAX_DISPLAY_TIME = 180000L;      // 3 minutes maximum
+    private static final float REFLECTION_TIME_RATIO = 0.3f;   // 30% additional time for reflection
+    private static final float COMPLEXITY_MULTIPLIER_BASE = 1.0f;
+    private static final float LONG_WORD_PENALTY = 0.3f;       // 30% more time for complex vocabulary
+    private static final float PUNCTUATION_PENALTY = 0.2f;     // 20% more time for complex sentences
+    private static final float DIALOGUE_PENALTY = 0.1f;       // 10% more time for dialogue
     private boolean animateSecond;
     private long delay;
     private View firstContent;
@@ -155,6 +168,9 @@ public class DayDreamerQuoth extends DreamService {
     private ImageView batteryStatusImageView;
     private TextView batteryChrgTypeTextView;
     private View contentBatteryStatusView;
+    
+    // Smart timing variables
+    private String currentQuoteText = "";
     
     private static final Random random = new Random();
 
@@ -225,8 +241,9 @@ public class DayDreamerQuoth extends DreamService {
                         // Cancel any existing delayed quote update and show immediately
                         handler.removeCallbacks(showQuoteRunnable);
                         setQuote(); // Show the first real quote immediately
-                        // Resume normal quote cycling
-                        handler.postDelayed(showQuoteRunnable, delay);
+                        // Resume normal quote cycling with proper delay calculation
+                        long properDelay = calculateNextDelay();
+                        handler.postDelayed(showQuoteRunnable, properDelay);
                     } else {
                         if (DEBUG) {
                             Log.d("DayDreamerQuoth", "Loading completed but no pending request");
@@ -276,6 +293,163 @@ public class DayDreamerQuoth extends DreamService {
         }
     }
 
+    /**
+     * Calculate smart delay based on quote complexity and reading speed
+     */
+    private long calculateSmartDelay(String quoteText) {
+        if (quoteText == null || quoteText.isEmpty()) {
+            return DEFAULT_DELAY;
+        }
+        
+        // Get user's reading speed preference
+        int readingSpeedWPM = getUserReadingSpeed();
+        
+        // Analyze quote complexity
+        int wordCount = getWordCount(quoteText);
+        float complexityMultiplier = calculateComplexityMultiplier(quoteText, wordCount);
+        
+        // Calculate base reading time in milliseconds
+        long baseReadingTime = (long) ((wordCount / (float) readingSpeedWPM) * 60 * 1000);
+        
+        // Apply complexity adjustments
+        long adjustedReadingTime = (long) (baseReadingTime * complexityMultiplier);
+        
+        // Add reflection time
+        long smartDelay = (long) (adjustedReadingTime * (1 + REFLECTION_TIME_RATIO));
+        
+        // Apply bounds
+        return Math.max(MIN_DISPLAY_TIME, Math.min(MAX_DISPLAY_TIME, smartDelay));
+    }
+    
+    /**
+     * Get word count from quote text
+     */
+    private int getWordCount(String text) {
+        if (text == null || text.trim().isEmpty()) {
+            return 0;
+        }
+        return text.trim().split("\\s+").length;
+    }
+    
+    /**
+     * Calculate complexity multiplier based on various factors
+     */
+    private float calculateComplexityMultiplier(String quoteText, int wordCount) {
+        float multiplier = COMPLEXITY_MULTIPLIER_BASE;
+        
+        if (wordCount == 0) return multiplier;
+        
+        // Factor 1: Long words (7+ characters indicate complex vocabulary)
+        String[] words = quoteText.trim().split("\\s+");
+        int longWordCount = 0;
+        for (String word : words) {
+            // Remove punctuation for length calculation
+            String cleanWord = word.replaceAll("[^a-zA-Z]", "");
+            if (cleanWord.length() > 7) {
+                longWordCount++;
+            }
+        }
+        if (longWordCount > wordCount * 0.3) { // More than 30% long words
+            multiplier += LONG_WORD_PENALTY;
+        }
+        
+        // Factor 2: Punctuation complexity (indicates complex sentence structure)
+        int punctuationCount = quoteText.replaceAll("[^,;:()\\-]", "").length();
+        if (punctuationCount > 2) {
+            multiplier += PUNCTUATION_PENALTY;
+        }
+        
+        // Factor 3: Dialogue detection
+        if (containsDialogue(quoteText)) {
+            multiplier += DIALOGUE_PENALTY;
+        }
+        
+        return multiplier;
+    }
+    
+    /**
+     * Check if quote contains dialogue (quotation marks)
+     */
+    private boolean containsDialogue(String text) {
+        return text.contains("\"") || text.contains("'") || 
+               text.contains("\u201C") || text.contains("\u201D") ||
+               text.contains("\u2018") || text.contains("\u2019");
+    }
+    
+    /**
+     * Get user's reading speed preference in Words Per Minute
+     */
+    private int getUserReadingSpeed() {
+        SharedPreferences prefs = QuothPrefs.get(this);
+        String readingSpeedStr = prefs.getString(QuothPrefs.PREF_READING_SPEED, String.valueOf(DEFAULT_READING_WPM));
+        try {
+            return Integer.parseInt(readingSpeedStr);
+        } catch (NumberFormatException e) {
+            return DEFAULT_READING_WPM;
+        }
+    }
+    
+    /**
+     * Parse timing preference and extract delay and mode
+     */
+    private void parseTimingPreference() {
+        SharedPreferences prefs = QuothPrefs.get(this);
+        String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:fixed");
+        
+        // Parse format: "delay:mode" (e.g., "60000:fixed", "0:smart", "300000:hybrid")
+        String[] parts = timingPref.split(":");
+        if (parts.length == 2) {
+            try {
+                delay = Long.parseLong(parts[0]);
+                // Mode will be determined dynamically in calculateNextDelay()
+            } catch (NumberFormatException e) {
+                delay = DEFAULT_DELAY;
+            }
+        } else {
+            // Fallback for old preference format
+            try {
+                delay = Long.parseLong(timingPref);
+            } catch (NumberFormatException e) {
+                delay = DEFAULT_DELAY;
+            }
+        }
+    }
+    
+    /**
+     * Calculate next delay based on timing mode preference
+     */
+    private long calculateNextDelay() {
+        SharedPreferences prefs = QuothPrefs.get(this);
+        String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:fixed");
+        
+        // Parse format: "delay:mode"
+        String[] parts = timingPref.split(":");
+        if (parts.length != 2) {
+            return delay; // Fallback to basic delay
+        }
+        
+        String mode = parts[1];
+        long baseDelay;
+        try {
+            baseDelay = Long.parseLong(parts[0]);
+        } catch (NumberFormatException e) {
+            return delay; // Fallback to default
+        }
+        
+        switch (mode) {
+            case "smart":
+                return calculateSmartDelay(currentQuoteText);
+                
+            case "hybrid":
+                long smartDelay = calculateSmartDelay(currentQuoteText);
+                return Math.max(smartDelay, baseDelay);
+                
+            case "fixed":
+            default:
+                return baseDelay;
+        }
+    }
+
     private void setQuote() {
 
         Resources resources;
@@ -298,6 +472,7 @@ public class DayDreamerQuoth extends DreamService {
         }
 
         qline = randLineFromFile();
+        currentQuoteText = qline; // Store for smart timing calculation
 
         qlineparts = qline.split(" -- ", 2);
         quoteStr = qlineparts[0];
@@ -430,10 +605,10 @@ public class DayDreamerQuoth extends DreamService {
     private void showQuote() {
         setQuote();
         
-        // If we're showing a loading message, check more frequently
-        long nextDelay = delay;
+        // Determine next delay based on timing mode and loading state
+        long nextDelay;
         if (isLoadingQuotes && !isQuotesLoaded) {
-            // Check every 2 seconds while loading instead of full delay
+            // Check every 2 seconds while loading instead of calculated delay
             nextDelay = 2000L;
             if (DEBUG) {
                 Log.d("DayDreamerQuoth", "Using short delay while loading quotes");
@@ -444,6 +619,14 @@ public class DayDreamerQuoth extends DreamService {
                 Log.d("DayDreamerQuoth", "Failsafe: Clearing stale pending request");
             }
             pendingQuoteRequest = false;
+            nextDelay = calculateNextDelay();
+        } else {
+            // Normal operation - use smart timing or fixed delay based on preference
+            nextDelay = calculateNextDelay();
+            if (DEBUG) {
+                Log.d("DayDreamerQuoth", "Next delay calculated: " + nextDelay + "ms for quote: " + 
+                    (currentQuoteText.length() > 50 ? currentQuoteText.substring(0, 50) + "..." : currentQuoteText));
+            }
         }
         
         handler.postDelayed(showQuoteRunnable, nextDelay);
@@ -494,18 +677,8 @@ public class DayDreamerQuoth extends DreamService {
         if (DEBUG) {
         	delay = DEBUG_DELAY_QUOTE;
         } else {
-        	try {
-                if (delay_txt == null) {
-                    Log.w("DayDreamerQuoth", "Delay preference is null, using default");
-                    delay = DEFAULT_DELAY;
-                } else {
-                    delay = Long.parseLong(delay_txt);
-                }
-        	}
-        	catch (NumberFormatException numberformatexception) {
-                Log.e("DayDreamerQuoth", "Error setting delay: ", numberformatexception);
-                delay = DEFAULT_DELAY;
-        	}
+            // Parse the new combined timing preference format
+            parseTimingPreference();
         }
 
         // Cache all view references for performance
