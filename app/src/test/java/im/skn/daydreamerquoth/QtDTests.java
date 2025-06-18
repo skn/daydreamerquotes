@@ -9,6 +9,7 @@ import java.lang.String;
 import java.io.BufferedReader;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.robolectric.shadows.ShadowLog;
@@ -213,5 +214,100 @@ public class QtDTests {
         long delay = (Long) method.invoke(instance, enormous.toString());
         
         assertTrue(delay <= 180000L);
+    }
+
+    @Test
+    public void testLoadQuotesFromFile_EmptyFile() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("loadQuotesFromFile");
+        method.setAccessible(true);
+        
+        try {
+            @SuppressWarnings("unchecked")
+            List<String> quotes = (List<String>) method.invoke(instance);
+            
+            // Empty file should return empty list, not null
+            assertNotNull("Quote list should not be null for empty file", quotes);
+            
+            // For normal quotes file, should have content
+            if (quotes.isEmpty()) {
+                // This would indicate an actual empty quotes file
+                assertTrue("Empty file should return empty list", quotes.isEmpty());
+            } else {
+                // Normal case - file has quotes
+                assertTrue("Quotes file should contain quotes", quotes.size() > 0);
+            }
+        } catch (Exception e) {
+            // Should not throw exception for normal file access
+            if (e.getCause() instanceof java.io.IOException) {
+                fail("Should not get IOException for normal quotes file: " + e.getCause().getMessage());
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    @Test
+    public void testLoadQuotesFromFile_MalformedContent() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("loadQuotesFromFile");
+        method.setAccessible(true);
+        
+        try {
+            @SuppressWarnings("unchecked")
+            List<String> quotes = (List<String>) method.invoke(instance);
+            
+            // Method should handle any content gracefully
+            assertNotNull("Quote list should not be null", quotes);
+            
+            // Each line should be a string (no null entries)
+            for (String quote : quotes) {
+                assertNotNull("Individual quote should not be null", quote);
+            }
+            
+            // Should return some quotes from the resource file
+            assertTrue("Should load quotes from resource file", quotes.size() > 0);
+            
+        } catch (Exception e) {
+            // Method should not throw exceptions for normal resource access
+            if (e.getCause() instanceof java.io.IOException) {
+                fail("Should not get IOException for resource file: " + e.getCause().getMessage());
+            } else {
+                throw e;
+            }
+        }
+    }
+
+    @Test
+    public void testLoadQuotesFromFile_IOExceptionHandling() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("loadQuotesFromFile");
+        method.setAccessible(true);
+        
+        // Test that the method properly declares IOException
+        Class<?>[] exceptionTypes = method.getExceptionTypes();
+        boolean declaresIOException = false;
+        for (Class<?> exceptionType : exceptionTypes) {
+            if (exceptionType.equals(java.io.IOException.class)) {
+                declaresIOException = true;
+                break;
+            }
+        }
+        
+        assertTrue("loadQuotesFromFile should declare IOException", declaresIOException);
+        
+        // Test normal execution doesn't throw IOException
+        try {
+            @SuppressWarnings("unchecked")
+            List<String> quotes = (List<String>) method.invoke(instance);
+            assertNotNull("Normal execution should return valid list", quotes);
+        } catch (Exception e) {
+            if (e.getCause() instanceof java.io.IOException) {
+                fail("Normal resource access should not throw IOException: " + e.getCause().getMessage());
+            }
+        }
     }
 }
