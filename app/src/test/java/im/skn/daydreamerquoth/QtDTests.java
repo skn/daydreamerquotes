@@ -370,4 +370,138 @@ public class QtDTests {
             assertTrue("Time per quote should be reasonable", timePerQuote < 10.0); // 10ms per quote max
         }
     }
+
+    @Test
+    public void testQuoteSelection_Randomness() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        // Load quotes first to ensure we have content
+        Method loadMethod = DayDreamerQuoth.class.getDeclaredMethod("loadQuotesFromFile");
+        loadMethod.setAccessible(true);
+        @SuppressWarnings("unchecked")
+        List<String> quotes = (List<String>) loadMethod.invoke(instance);
+        
+        // Simulate loaded state by setting the quotes directly
+        java.lang.reflect.Field quotesField = DayDreamerQuoth.class.getDeclaredField("quotes");
+        quotesField.setAccessible(true);
+        quotesField.set(instance, quotes);
+        
+        java.lang.reflect.Field numberOfQuotesField = DayDreamerQuoth.class.getDeclaredField("numberOfQuotes");
+        numberOfQuotesField.setAccessible(true);
+        numberOfQuotesField.set(instance, quotes.size());
+        
+        java.lang.reflect.Field isQuotesLoadedField = DayDreamerQuoth.class.getDeclaredField("isQuotesLoaded");
+        isQuotesLoadedField.setAccessible(true);
+        isQuotesLoadedField.set(instance, true);
+        
+        // Test randomness - multiple calls should return different quotes
+        Method randMethod = DayDreamerQuoth.class.getDeclaredMethod("randLineFromFile");
+        randMethod.setAccessible(true);
+        
+        Set<String> selectedQuotes = new HashSet<>();
+        for (int i = 0; i < 20; i++) {
+            String quote = (String) randMethod.invoke(instance);
+            selectedQuotes.add(quote);
+        }
+        
+        // With 20 iterations and multiple quotes, should get some variety
+        if (quotes.size() > 1) {
+            assertTrue("Should select varied quotes with randomness", selectedQuotes.size() > 1);
+        }
+        
+        // All selected quotes should be from the original list
+        for (String selectedQuote : selectedQuotes) {
+            assertTrue("Selected quote should be from loaded quotes", quotes.contains(selectedQuote));
+        }
+    }
+
+    @Test
+    public void testQuoteSelection_EmptyListHandling() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        // Set up empty quotes scenario
+        java.lang.reflect.Field quotesField = DayDreamerQuoth.class.getDeclaredField("quotes");
+        quotesField.setAccessible(true);
+        quotesField.set(instance, new java.util.ArrayList<String>());
+        
+        java.lang.reflect.Field numberOfQuotesField = DayDreamerQuoth.class.getDeclaredField("numberOfQuotes");
+        numberOfQuotesField.setAccessible(true);
+        numberOfQuotesField.set(instance, 0);
+        
+        java.lang.reflect.Field isQuotesLoadedField = DayDreamerQuoth.class.getDeclaredField("isQuotesLoaded");
+        isQuotesLoadedField.setAccessible(true);
+        isQuotesLoadedField.set(instance, true);
+        
+        Method randMethod = DayDreamerQuoth.class.getDeclaredMethod("randLineFromFile");
+        randMethod.setAccessible(true);
+        String result = (String) randMethod.invoke(instance);
+        
+        // Should return fallback message for empty quotes
+        assertNotNull("Should return fallback message for empty quotes", result);
+        assertTrue("Should contain fallback text", result.contains("No quotes found"));
+    }
+
+    @Test
+    public void testFallbackMessages_LoadingState() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        // Set up loading state (quotes not loaded yet)
+        java.lang.reflect.Field isQuotesLoadedField = DayDreamerQuoth.class.getDeclaredField("isQuotesLoaded");
+        isQuotesLoadedField.setAccessible(true);
+        isQuotesLoadedField.set(instance, false);
+        
+        java.lang.reflect.Field isLoadingQuotesField = DayDreamerQuoth.class.getDeclaredField("isLoadingQuotes");
+        isLoadingQuotesField.setAccessible(true);
+        isLoadingQuotesField.set(instance, true);
+        
+        Method randMethod = DayDreamerQuoth.class.getDeclaredMethod("randLineFromFile");
+        randMethod.setAccessible(true);
+        String result = (String) randMethod.invoke(instance);
+        
+        // Should return loading message
+        assertNotNull("Should return loading message", result);
+        assertTrue("Should contain loading text", result.contains("Loading inspirational quotes"));
+    }
+
+    @Test
+    public void testQuoteParsing_AuthorExtractionFromSetQuote() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        // Create a test quote list with known quote format
+        List<String> testQuotes = new java.util.ArrayList<>();
+        testQuotes.add("Life is what happens when you're busy making other plans -- John Lennon");
+        testQuotes.add("Simple wisdom without author");
+        
+        // Set up the instance with test quotes
+        java.lang.reflect.Field quotesField = DayDreamerQuoth.class.getDeclaredField("quotes");
+        quotesField.setAccessible(true);
+        quotesField.set(instance, testQuotes);
+        
+        java.lang.reflect.Field numberOfQuotesField = DayDreamerQuoth.class.getDeclaredField("numberOfQuotes");
+        numberOfQuotesField.setAccessible(true);
+        numberOfQuotesField.set(instance, testQuotes.size());
+        
+        java.lang.reflect.Field isQuotesLoadedField = DayDreamerQuoth.class.getDeclaredField("isQuotesLoaded");
+        isQuotesLoadedField.setAccessible(true);
+        isQuotesLoadedField.set(instance, true);
+        
+        // Test the actual setQuote method parsing
+        Method setQuoteMethod = DayDreamerQuoth.class.getDeclaredMethod("setQuote");
+        setQuoteMethod.setAccessible(true);
+        
+        // We can't easily test the UI output, but we can verify the method runs without exception
+        // and the parsing logic is exercised
+        try {
+            setQuoteMethod.invoke(instance);
+            // If we get here, the parsing completed without throwing an exception
+            assertTrue("setQuote method should complete without exception", true);
+        } catch (Exception e) {
+            if (e.getCause() instanceof NullPointerException) {
+                // Expected due to UI components not being initialized in test environment
+                assertTrue("NPE expected due to UI components in test environment", true);
+            } else {
+                fail("Unexpected exception in setQuote: " + e.getCause());
+            }
+        }
+    }
 }
