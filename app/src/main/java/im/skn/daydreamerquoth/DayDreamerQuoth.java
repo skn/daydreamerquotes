@@ -109,7 +109,12 @@ class TypefaceManager {
 }
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
+    // Debug flags - can be set independently for different testing scenarios:
+    // To enable logging: Set DEBUG = true
+    // To test quick quote cycling: Set DEBUG_FAST_QUOTES = true  
+    // Both can be enabled simultaneously if needed
+    protected static final boolean DEBUG = false; /* General debug logging - accessible from unit tests */
+    protected static final boolean DEBUG_FAST_QUOTES = false; /* Quick quote iteration for testing - overrides timing preferences */
     private static final long DEBUG_DELAY_QUOTE = 3000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
@@ -421,8 +426,8 @@ public class DayDreamerQuoth extends DreamService {
      * Calculate next delay based on timing mode preference
      */
     private long calculateNextDelay() {
-        if (DEBUG) {
-            return DEBUG_DELAY_QUOTE; // Always use debug delay when debugging
+        if (DEBUG_FAST_QUOTES) {
+            return DEBUG_DELAY_QUOTE; // Use fast delay for quick quote iteration testing
         }
         
         SharedPreferences prefs = QuothPrefs.get(this);
