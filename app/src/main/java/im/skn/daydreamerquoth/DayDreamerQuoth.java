@@ -205,6 +205,11 @@ public class DayDreamerQuoth extends DreamService {
         
         isLoadingQuotes = true;
         
+        // Clean up any shutdown executor to allow garbage collection
+        if (quotesExecutor != null && quotesExecutor.isShutdown()) {
+            quotesExecutor = null;
+        }
+        
         if (quotesExecutor == null) {
             quotesExecutor = Executors.newSingleThreadExecutor();
         }
@@ -823,6 +828,17 @@ public class DayDreamerQuoth extends DreamService {
             pendingQuoteRequest = true;
         }
 
+        // Log memory usage baseline at startup
+        if (DEBUG) {
+            Runtime runtime = Runtime.getRuntime();
+            long usedMemory = runtime.totalMemory() - runtime.freeMemory();
+            long maxMemory = runtime.maxMemory();
+            Log.d("DayDreamerQuoth", String.format("Startup Memory - Used: %.1fMB / Max: %.1fMB (%.1f%%)", 
+                usedMemory / 1024.0 / 1024.0,
+                maxMemory / 1024.0 / 1024.0,
+                (usedMemory * 100.0) / maxMemory));
+        }
+
         showQuote();
     }
 
@@ -898,10 +914,23 @@ public class DayDreamerQuoth extends DreamService {
         //     isQuotesLoaded = false;
         // }
         
-        // Optional: Log TypefaceManager cache status for debugging
+        // Optional: Log TypefaceManager cache status and memory usage for debugging
         if (DEBUG) {
             TypefaceManager typefaceManager = TypefaceManager.getInstance();
             Log.d("DayDreamerQuoth", "TypefaceManager cache size: " + typefaceManager.getCacheSize());
+            
+            // Memory usage monitoring
+            Runtime runtime = Runtime.getRuntime();
+            long totalMemory = runtime.totalMemory();
+            long freeMemory = runtime.freeMemory();
+            long usedMemory = totalMemory - freeMemory;
+            long maxMemory = runtime.maxMemory();
+            
+            Log.d("DayDreamerQuoth", String.format("Memory - Used: %.1fMB, Free: %.1fMB, Total: %.1fMB, Max: %.1fMB", 
+                usedMemory / 1024.0 / 1024.0,
+                freeMemory / 1024.0 / 1024.0,
+                totalMemory / 1024.0 / 1024.0,
+                maxMemory / 1024.0 / 1024.0));
         }
         
         // Call super last
