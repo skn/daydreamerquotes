@@ -310,4 +310,64 @@ public class QtDTests {
             }
         }
     }
+
+    @Test
+    public void testLoadQuotesFromFile_MemoryLimits() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("loadQuotesFromFile");
+        method.setAccessible(true);
+        
+        @SuppressWarnings("unchecked")
+        List<String> quotes = (List<String>) method.invoke(instance);
+        
+        // Test memory boundaries - reasonable file size limits
+        assertTrue("Quote count should be within reasonable bounds", quotes.size() < 50000);
+        assertTrue("Should have some quotes loaded", quotes.size() > 0);
+        
+        // Test individual quote memory usage
+        for (String quote : quotes) {
+            assertTrue("Individual quotes should have reasonable length", 
+                      quote.length() < 10000); // 10KB per quote max
+        }
+        
+        // Calculate approximate memory usage
+        long totalMemory = 0;
+        for (String quote : quotes) {
+            totalMemory += quote.length() * 2; // Approximate chars to bytes
+        }
+        
+        // Total quote data should be under 10MB
+        assertTrue("Total quotes memory should be reasonable", totalMemory < 10_000_000);
+    }
+
+    @Test
+    public void testLoadQuotesFromFile_PerformanceBounds() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("loadQuotesFromFile");
+        method.setAccessible(true);
+        
+        // Measure file loading performance
+        long startTime = System.currentTimeMillis();
+        
+        @SuppressWarnings("unchecked")
+        List<String> quotes = (List<String>) method.invoke(instance);
+        
+        long duration = System.currentTimeMillis() - startTime;
+        
+        // File loading should complete within reasonable time
+        assertTrue("File loading should complete within 5 seconds", duration < 5000);
+        assertTrue("File loading should not be instant (indicates actual I/O)", duration > 0);
+        
+        // Verify we actually loaded quotes within the time limit
+        assertNotNull("Should return quote list", quotes);
+        assertTrue("Should load quotes within time limit", quotes.size() > 0);
+        
+        // Performance per quote should be reasonable
+        if (quotes.size() > 0) {
+            double timePerQuote = (double) duration / quotes.size();
+            assertTrue("Time per quote should be reasonable", timePerQuote < 10.0); // 10ms per quote max
+        }
+    }
 }
