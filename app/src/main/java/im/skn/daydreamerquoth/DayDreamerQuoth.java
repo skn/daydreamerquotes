@@ -129,7 +129,7 @@ public class DayDreamerQuoth extends DreamService {
     private static final int DEFAULT_READING_WPM = 200;        // Average adult reading speed
     private static final long MIN_DISPLAY_TIME = 5000L;        // 5 seconds minimum
     private static final long MAX_DISPLAY_TIME = 180000L;      // 3 minutes maximum
-    private static final float REFLECTION_TIME_RATIO = 0.3f;   // 30% additional time for reflection
+    private static final float REFLECTION_TIME_RATIO = 0.4f;   // 40% additional time for reflection
     private static final float COMPLEXITY_MULTIPLIER_BASE = 1.0f;
     private static final float LONG_WORD_PENALTY = 0.3f;       // 30% more time for complex vocabulary
     private static final float PUNCTUATION_PENALTY = 0.2f;     // 20% more time for complex sentences
