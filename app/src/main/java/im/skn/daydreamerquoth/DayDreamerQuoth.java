@@ -109,7 +109,7 @@ class TypefaceManager {
 }
 
 public class DayDreamerQuoth extends DreamService {
-    protected static final boolean DEBUG = false; /* DEBUG is set to protected so as to be accessible from unit test */
+    protected static final boolean DEBUG = true; /* DEBUG is set to protected so as to be accessible from unit test */
     private static final long DEBUG_DELAY_QUOTE = 3000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
@@ -489,9 +489,13 @@ public class DayDreamerQuoth extends DreamService {
         
         if (bodyTextView != null) {
             bodyTextView.setText(finalQuoteStr);
+            // Subtle text shadow for better readability
+            bodyTextView.setShadowLayer(2f, 1f, 1f, 0x30000000);
         }
         if (authTextView != null) {
             authTextView.setText(finalAuthStr);
+            // Slightly more subtle shadow for author
+            authTextView.setShadowLayer(1f, 0.5f, 0.5f, 0x20000000);
         }
         
         // https://developer.android.com/develop/ui/views/animations/reveal-or-hide-view#CrossfadeViews
