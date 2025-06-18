@@ -12,6 +12,9 @@ import java.util.HashSet;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.robolectric.shadows.ShadowLog;
+import java.lang.reflect.Method;
+import org.robolectric.Robolectric;
+import org.robolectric.android.controller.ServiceController;
 
 @RunWith(RobolectricTestRunner.class)
 public class QtDTests {
@@ -19,6 +22,11 @@ public class QtDTests {
     @Before
     public void setUp() {
         ShadowLog.stream = System.out;
+    }
+    
+    private DayDreamerQuoth createTestInstance() {
+        ServiceController<DayDreamerQuoth> controller = Robolectric.buildService(DayDreamerQuoth.class);
+        return controller.create().get();
     }
 
     @Test
@@ -64,5 +72,146 @@ public class QtDTests {
     @Test
     public void debugVar() {
         assertFalse(DayDreamerQuoth.DEBUG);
+    }
+
+    @Test
+    public void testCalculateSmartDelay_ShortQuote() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        String shortQuote = "Be yourself.";
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateSmartDelay", String.class);
+        method.setAccessible(true);
+        long delay = (Long) method.invoke(instance, shortQuote);
+        
+        assertEquals(5000L, delay);
+    }
+
+    @Test
+    public void testCalculateSmartDelay_LongComplexQuote() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        String complexQuote = "The unexamined life is not worth living, for it requires tremendous courage to question everything you believe.";
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateSmartDelay", String.class);
+        method.setAccessible(true);
+        long delay = (Long) method.invoke(instance, complexQuote);
+        
+        assertTrue(delay > 5000L);
+        assertTrue(delay <= 180000L);
+    }
+
+    @Test
+    public void testCalculateSmartDelay_WithDialogue() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        String dialogueQuote = "He said, \"The only way to do great work is to love what you do.\"";
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateSmartDelay", String.class);
+        method.setAccessible(true);
+        long delay = (Long) method.invoke(instance, dialogueQuote);
+        
+        assertTrue(delay > 5000L);
+    }
+
+    @Test
+    public void testCalculateNextDelay_DebugMode() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        // Test that debug mode returns 3000L when DEBUG is true
+        // Since DEBUG is final, we test the current value behavior
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateNextDelay");
+        method.setAccessible(true);
+        long delay = (Long) method.invoke(instance);
+        
+        if (DayDreamerQuoth.DEBUG) {
+            assertEquals(3000L, delay);
+        } else {
+            // When DEBUG is false, delay should not be the debug value
+            assertNotEquals(3000L, delay);
+        }
+    }
+
+    @Test
+    public void testUserReadingSpeed_Default() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("getUserReadingSpeed");
+        method.setAccessible(true);
+        int speed = (Integer) method.invoke(instance);
+        
+        assertEquals(200, speed);
+    }
+
+    @Test
+    public void testComplexityMultiplier_SimpleSentence() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        String simple = "Life is good.";
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateComplexityMultiplier", String.class, int.class);
+        method.setAccessible(true);
+        float multiplier = (Float) method.invoke(instance, simple, 3);
+        
+        assertEquals(1.0f, multiplier, 0.01f);
+    }
+
+    @Test
+    public void testComplexityMultiplier_ComplexSentence() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        String complex = "Extraordinary circumstances require unprecedented solutions, don't they?";
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateComplexityMultiplier", String.class, int.class);
+        method.setAccessible(true);
+        float multiplier = (Float) method.invoke(instance, complex, 7);
+        
+        assertTrue(multiplier > 1.0f);
+    }
+
+    @Test
+    public void testWordCount_AccurateCounting() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("getWordCount", String.class);
+        method.setAccessible(true);
+        
+        assertEquals(3, (int) method.invoke(instance, "Hello world today"));
+        assertEquals(1, (int) method.invoke(instance, "Hello"));
+        assertEquals(0, (int) method.invoke(instance, ""));
+        assertEquals(0, (int) method.invoke(instance, (String) null));
+    }
+
+    @Test
+    public void testContainsDialogue_Detection() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("containsDialogue", String.class);
+        method.setAccessible(true);
+        
+        assertTrue((Boolean) method.invoke(instance, "He said \"Hello\""));
+        assertTrue((Boolean) method.invoke(instance, "She asked 'How are you?'"));
+        assertFalse((Boolean) method.invoke(instance, "Simple statement."));
+    }
+
+    @Test
+    public void testTimingBounds_EnforceMinimum() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        String tiny = "Hi.";
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateSmartDelay", String.class);
+        method.setAccessible(true);
+        long delay = (Long) method.invoke(instance, tiny);
+        
+        assertTrue(delay >= 5000L);
+    }
+
+    @Test
+    public void testTimingBounds_EnforceMaximum() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        StringBuilder enormous = new StringBuilder();
+        for (int i = 0; i < 1000; i++) {
+            enormous.append("Very long quote with many words that should exceed maximum timing bounds. ");
+        }
+        
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateSmartDelay", String.class);
+        method.setAccessible(true);
+        long delay = (Long) method.invoke(instance, enormous.toString());
+        
+        assertTrue(delay <= 180000L);
     }
 }
