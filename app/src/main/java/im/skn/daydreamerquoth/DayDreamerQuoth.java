@@ -116,8 +116,8 @@ public class DayDreamerQuoth extends DreamService {
     // To enable logging: Set DEBUG = true
     // To test quick quote cycling: Set DEBUG_FAST_QUOTES = true  
     // Both can be enabled simultaneously if needed
-    protected static final boolean DEBUG = true; /* General debug logging - accessible from unit tests */
-    protected static final boolean DEBUG_FAST_QUOTES = true; /* Quick quote iteration for testing - overrides timing preferences */
+    protected static final boolean DEBUG = false; /* General debug logging - accessible from unit tests */
+    protected static final boolean DEBUG_FAST_QUOTES = false; /* Quick quote iteration for testing - overrides timing preferences */
     private static final long DEBUG_DELAY_QUOTE = 3000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
