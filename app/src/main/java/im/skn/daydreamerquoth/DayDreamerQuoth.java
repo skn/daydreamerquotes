@@ -33,6 +33,7 @@ import java.util.concurrent.Executors;
 /**
  * TypefaceManager - Singleton class to cache and manage Typeface objects
  * Prevents memory leaks from repeatedly creating Typeface instances
+ * Uses Application Context to avoid retaining Service/Activity references in static cache
  */
 class TypefaceManager {
     private static TypefaceManager instance;
@@ -53,7 +54,9 @@ class TypefaceManager {
         Typeface typeface = typefaceCache.get(fontPath);
         if (typeface == null) {
             try {
-                typeface = Typeface.createFromAsset(context.getAssets(), fontPath);
+                // Use Application Context to prevent memory leaks from static cache
+                Context appContext = context.getApplicationContext();
+                typeface = Typeface.createFromAsset(appContext.getAssets(), fontPath);
                 typefaceCache.put(fontPath, typeface);
             } catch (Exception e) {
                 Log.w("TypefaceManager", "Failed to load font: " + fontPath, e);
@@ -113,8 +116,8 @@ public class DayDreamerQuoth extends DreamService {
     // To enable logging: Set DEBUG = true
     // To test quick quote cycling: Set DEBUG_FAST_QUOTES = true  
     // Both can be enabled simultaneously if needed
-    protected static final boolean DEBUG = false; /* General debug logging - accessible from unit tests */
-    protected static final boolean DEBUG_FAST_QUOTES = false; /* Quick quote iteration for testing - overrides timing preferences */
+    protected static final boolean DEBUG = true; /* General debug logging - accessible from unit tests */
+    protected static final boolean DEBUG_FAST_QUOTES = true; /* Quick quote iteration for testing - overrides timing preferences */
     private static final long DEBUG_DELAY_QUOTE = 3000L;
     private static final int TEXT_SIZE_AUTHOR_LARGE = 34;
     private static final int TEXT_SIZE_AUTHOR_MEDIUM = 29;
