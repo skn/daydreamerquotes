@@ -17,7 +17,7 @@ android {
 
 
     // https://developer.android.com/build
-    // Dec 2023: New apps required to target API level 33 and will be 34 in Aug '24
+    // Dec 2025: New apps required to target API level > 35
     defaultConfig {
         // With the Android Gradle Plugin 7.0.0 onwards you can use:
         //
@@ -27,9 +27,9 @@ android {
 
         //minSdkVersion 19 // lower bound for app, determines which of a user’s devices an app can be installed on
         //targetSdkVersion 34 // which Android version the app was designed and tested on
-        minSdk 19 // lower bound for app, determines which of a user’s devices an app can be installed on
-        targetSdk 34 // which Android version the app was designed and tested on
-        compileSdk 34 // which Android SDK version will be used by gradle to compile your app
+        minSdk 21 // lower bound for app, determines which of a user’s devices an app can be installed on
+        targetSdk 35 // which Android version the app was designed and tested on
+        compileSdk 35 // which Android SDK version will be used by gradle to compile your app
         applicationId "im.skn.daydreamerquoth"
 
     }
@@ -71,7 +71,7 @@ dependencies {
     // Support v4
     implementation 'com.android.support:support-v4:28.0.0'
     // Robolectric
-    testImplementation "org.robolectric:robolectric:4.11.1"
+    testImplementation "org.robolectric:robolectric:4.16"
     testImplementation 'junit:junit:4.13.2'
     implementation 'androidx.preference:preference:1.2.1'
     implementation 'androidx.test:core:1.5.0'
