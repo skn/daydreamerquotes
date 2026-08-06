@@ -24,7 +24,7 @@ This settings menu can also be reached by launching the app.
 
 # Compatability
 Requires Android
-4.2 and up
+5.0 (API 21) and up
 
 # Data Safety
 - No data shared with third parties
