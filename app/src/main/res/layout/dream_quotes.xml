@@ -92,7 +92,4 @@
             android:layout_alignParentBottom="true"
             tools:visibility="visible" />
     </RelativeLayout>
-    <!-- add this for a background
-    android:background="@drawable/back"
-    -->
 </RelativeLayout>

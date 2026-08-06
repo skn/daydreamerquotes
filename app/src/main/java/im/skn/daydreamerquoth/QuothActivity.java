@@ -1,7 +1,6 @@
 package im.skn.daydreamerquoth;
 
 import android.app.Activity;
-import androidx.appcompat.app.AppCompatActivity;
 import android.content.Intent;
 import android.os.Bundle;
 

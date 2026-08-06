@@ -1,8 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="MyProjectTheme" parent="@style/Theme.AppCompat">
-        <item name="android:layout_alignLeft"></item>
-    </style>
     <style name="QuoteBody">
         <item name="android:textSize">30.0sp</item>
         <item name="android:textStyle">normal</item>
@@ -24,17 +21,17 @@
         <item name="android:textSize">22.0sp</item>
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:alpha">0.5</item>item>
+        <item name="android:alpha">0.5</item>
     </style>
     <style name="BatteryPct">
         <item name="android:textSize">16sp</item>
-        <item name="android:alpha">0.5</item>item>
+        <item name="android:alpha">0.5</item>
     </style>
     <style name="BatteryStatus">
-        <item name="android:alpha">0.6</item>item>
+        <item name="android:alpha">0.6</item>
     </style>
     <style name="batteryChrgType">
         <item name="android:textSize">16sp</item>
-        <item name="android:alpha">0.5</item>item>
+        <item name="android:alpha">0.5</item>
     </style>
 </resources>

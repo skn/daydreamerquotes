@@ -15,6 +15,7 @@ import android.os.Looper;
 import android.service.dreams.DreamService;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.TypedValue;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -702,11 +703,11 @@ public class DayDreamerQuoth extends DreamService {
             firstContentAuthTextView = firstContent.findViewById(R.id.quote_author);
             if (firstContentBodyTextView != null) {
                 firstContentBodyTextView.setTypeface(regularTypeface);
-                firstContentBodyTextView.setTextSize(2, quote_text_size);
+                firstContentBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, quote_text_size);
             }
             if (firstContentAuthTextView != null) {
                 firstContentAuthTextView.setTypeface(lightTypeface);
-                firstContentAuthTextView.setTextSize(2, author_text_size);
+                firstContentAuthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size);
             }
         }
 
@@ -716,24 +717,24 @@ public class DayDreamerQuoth extends DreamService {
             secondContentAuthTextView = secondContent.findViewById(R.id.quote_author);
             if (secondContentBodyTextView != null) {
                 secondContentBodyTextView.setTypeface(regularTypeface);
-                secondContentBodyTextView.setTextSize(2, quote_text_size);
+                secondContentBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, quote_text_size);
             }
             if (secondContentAuthTextView != null) {
                 secondContentAuthTextView.setTypeface(lightTypeface);
-                secondContentAuthTextView.setTextSize(2, author_text_size);
+                secondContentAuthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size);
             }
         }
 
         contentTimeView = findViewById(R.id.time);
         if (contentTimeView != null) {
             contentTimeView.setTypeface(regularTypeface);
-            contentTimeView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
+            contentTimeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
         }
 
         contentDateView = findViewById(R.id.date);
         if (contentDateView != null) {
             contentDateView.setTypeface(regularTypeface);
-            contentDateView.setTextSize(2, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
+            contentDateView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
         }
 
         contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
@@ -741,14 +742,14 @@ public class DayDreamerQuoth extends DreamService {
         contentBatteryPctView = findViewById(R.id.batteryPct);
         if (contentBatteryPctView != null) {
             contentBatteryPctView.setTypeface(regularTypeface);
-            contentBatteryPctView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
+            contentBatteryPctView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
         }
 
         if (contentBatteryStatusView != null) {
             batteryChrgTypeTextView = contentBatteryStatusView.findViewById(R.id.batteryChrgType);
             if (batteryChrgTypeTextView != null) {
                 batteryChrgTypeTextView.setTypeface(regularTypeface);
-                batteryChrgTypeTextView.setTextSize(2, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
+                batteryChrgTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
             }
         }
 
