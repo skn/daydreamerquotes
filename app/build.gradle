@@ -48,11 +48,6 @@ android {
             minifyEnabled true
             proguardFiles 'proguard.cfg'
             //zipAlignEnabled true
-            applicationVariants.all { variant ->
-                variant.outputs.all {
-                    outputFileName = "QuotestheDaydreamer-${variant.name}-${variant.versionName}.apk"
-                }
-            }
         }
     }
     testOptions {
@@ -65,6 +60,17 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     namespace = 'im.skn.daydreamerquoth'
+}
+
+androidComponents {
+    onVariants(selector().all()) { variant ->
+        def variantName = variant.name
+        variant.outputs.forEach { output ->
+            output.outputFileName.set(
+                output.versionName.map { vn -> "QuotestheDaydreamer-${variantName}-${vn}.apk" }
+            )
+        }
+    }
 }
 
 dependencies {
