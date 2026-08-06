@@ -44,7 +44,7 @@ android {
 
     buildTypes {
         release {
-            signingConfig signingConfigs.release
+            signingConfig = signingConfigs.release
             minifyEnabled true
             proguardFiles 'proguard.cfg'
             //zipAlignEnabled true
@@ -64,15 +64,15 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
-    namespace 'im.skn.daydreamerquoth'
+    namespace = 'im.skn.daydreamerquoth'
 }
 
 dependencies {
     // Support v4
-    implementation 'com.android.support:support-v4:28.0.0'
+    //Ok.implementation 'com.android.support:support-v4:28.0.0'
     // Robolectric
     testImplementation "org.robolectric:robolectric:4.16"
     testImplementation 'junit:junit:4.13.2'
     implementation 'androidx.preference:preference:1.2.1'
-    implementation 'androidx.test:core:1.5.0'
+    testImplementation 'androidx.test:core:1.5.0'
 }
