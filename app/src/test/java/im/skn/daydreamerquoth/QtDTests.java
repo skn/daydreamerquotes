@@ -18,6 +18,7 @@ import java.lang.reflect.Field;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ServiceController;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.BatteryManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -715,5 +716,61 @@ public class QtDTests {
                 "", pctView.getText().toString());
         assertEquals("Charge-type view should be untouched when showBatteryStatus is false",
                 "", chrgTypeView.getText().toString());
+    }
+
+    // --- parseTimingPreference() legacy-format tests ---
+
+    private Object getPrivateField(Object target, String fieldName) throws Exception {
+        Field field = DayDreamerQuoth.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        return field.get(target);
+    }
+
+    private void invokeParseTimingPreference(DayDreamerQuoth instance) throws Exception {
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("parseTimingPreference");
+        method.setAccessible(true);
+        method.invoke(instance);
+    }
+
+    @Test
+    public void testParseTimingPreference_LegacyFormat_BareNumber() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+
+        SharedPreferences prefs = QuothPrefs.get(instance);
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "45000").commit();
+
+        invokeParseTimingPreference(instance);
+
+        long delay = (Long) getPrivateField(instance, "delay");
+        assertEquals("Old (pre-Smart-Timing) bare-number preference should still parse correctly",
+                45000L, delay);
+    }
+
+    @Test
+    public void testParseTimingPreference_LegacyFormat_MalformedFallsBackToDefault() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+
+        SharedPreferences prefs = QuothPrefs.get(instance);
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "not_a_number").commit();
+
+        invokeParseTimingPreference(instance);
+
+        long delay = (Long) getPrivateField(instance, "delay");
+        assertEquals("Malformed legacy preference value should fall back to the default delay",
+                60000L, delay);
+    }
+
+    @Test
+    public void testParseTimingPreference_CurrentFormat_StillWorks() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+
+        SharedPreferences prefs = QuothPrefs.get(instance);
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "120000:hybrid").commit();
+
+        invokeParseTimingPreference(instance);
+
+        long delay = (Long) getPrivateField(instance, "delay");
+        assertEquals("Current 'delay:mode' format should still parse the delay portion correctly",
+                120000L, delay);
     }
 }
