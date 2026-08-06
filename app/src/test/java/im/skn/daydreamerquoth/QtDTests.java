@@ -17,8 +17,10 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Field;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ServiceController;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Typeface;
 import android.os.BatteryManager;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -772,5 +774,76 @@ public class QtDTests {
         long delay = (Long) getPrivateField(instance, "delay");
         assertEquals("Current 'delay:mode' format should still parse the delay portion correctly",
                 120000L, delay);
+    }
+
+    // --- TypefaceManager tests ---
+
+    @Test
+    public void testTypefaceManager_AllFontFamilies_LoadSuccessfully() {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        TypefaceManager manager = TypefaceManager.getInstance();
+
+        String[] fontFamilies = {"Roboto", "Santana", "DroidSerif", "OpenSans", "Typewriter"};
+        for (String family : fontFamilies) {
+            Typeface[] pair = manager.getTypefacePair(context, family);
+            assertNotSame("Regular typeface for '" + family + "' should load from its asset, not fall back to default",
+                    Typeface.DEFAULT, pair[0]);
+            assertNotSame("Light typeface for '" + family + "' should load from its asset, not fall back to default",
+                    Typeface.DEFAULT, pair[1]);
+        }
+    }
+
+    @Test
+    public void testTypefaceManager_CachesRepeatedRequests() {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        TypefaceManager manager = TypefaceManager.getInstance();
+
+        Typeface first = manager.getTypeface(context, "fonts/Roboto-Regular.ttf");
+        int cacheSizeAfterFirst = manager.getCacheSize();
+        Typeface second = manager.getTypeface(context, "fonts/Roboto-Regular.ttf");
+        int cacheSizeAfterSecond = manager.getCacheSize();
+
+        assertSame("Repeated request for the same font path should return the cached instance",
+                first, second);
+        assertEquals("Cache size should not grow for a repeated request of the same path",
+                cacheSizeAfterFirst, cacheSizeAfterSecond);
+    }
+
+    @Test
+    public void testTypefaceManager_NullFontPath_ReturnsDefault() {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        TypefaceManager manager = TypefaceManager.getInstance();
+
+        Typeface result = manager.getTypeface(context, null);
+
+        assertSame("A null font path should return Typeface.DEFAULT", Typeface.DEFAULT, result);
+    }
+
+    @Test
+    public void testTypefaceManager_NullFontFamily_FallsBackToSantana() {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        TypefaceManager manager = TypefaceManager.getInstance();
+
+        Typeface[] nullFamilyPair = manager.getTypefacePair(context, null);
+        Typeface[] santanaPair = manager.getTypefacePair(context, "Santana");
+
+        assertSame("A null font family should resolve to the same regular typeface as 'Santana'",
+                santanaPair[0], nullFamilyPair[0]);
+        assertSame("A null font family should resolve to the same light typeface as 'Santana'",
+                santanaPair[1], nullFamilyPair[1]);
+    }
+
+    @Test
+    public void testTypefaceManager_UnknownFontFamily_FallsBackToSantana() {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        TypefaceManager manager = TypefaceManager.getInstance();
+
+        Typeface[] unknownFamilyPair = manager.getTypefacePair(context, "SomeUnknownFontFamily");
+        Typeface[] santanaPair = manager.getTypefacePair(context, "Santana");
+
+        assertSame("An unrecognized font family should resolve to the same regular typeface as 'Santana'",
+                santanaPair[0], unknownFamilyPair[0]);
+        assertSame("An unrecognized font family should resolve to the same light typeface as 'Santana'",
+                santanaPair[1], unknownFamilyPair[1]);
     }
 }
