@@ -22,11 +22,11 @@ START_TIME=$(date +%s)
 END_TIME=$((START_TIME + TIME_MINUTES * 60))
 
 # CSV header
-echo "timestamp,pss_kb,private_dirty_kb,heap_alloc_kb,elapsed_minutes" > $LOGFILE
+echo "timestamp,pss_kb,elapsed_minutes" > $LOGFILE
 
 # Function to get memory stats
 get_memory() {
-    $ADB_PATH/adb -s $DEVICE shell dumpsys meminfo $PACKAGE 2>/dev/null | grep -E "TOTAL PSS:" | awk '{print $3}' | tr -d ','
+    $ADB_PATH/adb -s $DEVICE shell dumpsys meminfo $PACKAGE | grep -E "TOTAL PSS:" | awk '{print $3}' | tr -d ','
 }
 
 # Function to start screensaver
@@ -45,6 +45,12 @@ check_dream_running() {
     fi
 }
 
+# Function to check if the device is still connected to adb
+check_device_connected() {
+    STATE=$($ADB_PATH/adb -s $DEVICE get-state 2>/dev/null)
+    [ "$STATE" == "device" ]
+}
+
 # Setup: Ensure DayDreamer is set as default screensaver
 echo "Setting DayDreamer as default screensaver..."
 $ADB_PATH/adb -s $DEVICE shell settings put secure screensaver_components $PACKAGE/.DayDreamerQuoth
@@ -60,9 +66,9 @@ start_screensaver
 sleep 5
 
 if check_dream_running; then
-    echo "✅ SUCCESS: DayDreamer launched successfully"
+    echo "SUCCESS: DayDreamer launched successfully"
 else
-    echo "❌ ERROR: DayDreamer failed to launch"
+    echo "ERROR: DayDreamer failed to launch"
     exit 1
 fi
 
@@ -79,7 +85,7 @@ while [ $(date +%s) -lt $END_TIME ]; do
     if check_dream_running; then
         MEMORY=$(get_memory)
         TIMESTAMP=$(date +%s)
-        echo "$TIMESTAMP,$MEMORY,,$ELAPSED_MINUTES" >> $LOGFILE
+        echo "$TIMESTAMP,$MEMORY,$ELAPSED_MINUTES" >> $LOGFILE
         
         SAMPLE_COUNT=$((SAMPLE_COUNT + 1))
         echo "$(date '+%H:%M:%S') - Sample $SAMPLE_COUNT (${ELAPSED_MINUTES}m): ${MEMORY}KB"
@@ -90,12 +96,17 @@ while [ $(date +%s) -lt $END_TIME ]; do
             echo "--- $ELAPSED_MINUTES/$TIME_MINUTES minutes elapsed ($REMAINING_MINUTES minutes remaining) ---"
         fi
     else
+        if ! check_device_connected; then
+            echo "$(date '+%H:%M:%S') - ERROR: Device $DEVICE is no longer connected. Aborting."
+            break
+        fi
+
         echo "$(date '+%H:%M:%S') - WARNING: DayDreamer stopped running, restarting..."
         start_screensaver
         sleep 5
-        
+
         if ! check_dream_running; then
-            echo "❌ ERROR: Failed to restart DayDreamer"
+            echo "ERROR: Failed to restart DayDreamer"
             break
         fi
     fi
@@ -109,7 +120,7 @@ echo "Test duration completed, stopping screensaver..."
 $ADB_PATH/adb -s $DEVICE shell input keyevent KEYCODE_HOME
 sleep 2
 
-echo "✅ Test complete!"
+echo "Test complete!"
 echo "Results saved to: $LOGFILE"
 echo "Total samples collected: $SAMPLE_COUNT"
 echo ""
@@ -119,7 +130,7 @@ echo "Quick analysis:"
 echo "Memory usage over time (last 10 samples):"
 grep -v "NOTRUNNING" $LOGFILE | tail -10 | while read line; do
     MEMORY=$(echo $line | cut -d',' -f2)
-    ELAPSED=$(echo $line | cut -d',' -f5)
+    ELAPSED=$(echo $line | cut -d',' -f3)
     echo "  ${ELAPSED}m: ${MEMORY}KB"
 done
 
@@ -141,17 +152,17 @@ if [ ! -z "$FIRST_MEMORY" ] && [ ! -z "$LAST_MEMORY" ]; then
     echo "  Rate of change:    ${CHANGE_PER_HOUR}KB/hour"
 
     if [ $MEMORY_CHANGE -gt 10000 ]; then
-        echo "  ⚠️  WARNING: Memory increased by >10MB - significant leak detected"
+        echo "  WARNING: Memory increased by >10MB - significant leak detected"
     elif [ $MEMORY_CHANGE -gt 5000 ]; then
-        echo "  ⚠️  CAUTION: Memory increased by >5MB - possible leak"
+        echo "  CAUTION: Memory increased by >5MB - possible leak"
     elif [ $MEMORY_CHANGE -gt 1000 ]; then
-        echo "  ⚠️  MONITOR: Memory increased by >1MB - watch closely"
+        echo "  MONITOR: Memory increased by >1MB - watch closely"
     else
-        echo "  ✅ GOOD: Memory change within acceptable range"
+        echo "  GOOD: Memory change within acceptable range"
     fi
     
     # Hourly projection
     if [ $TIME_MINUTES -ge 60 ]; then
-        echo "  📊 Projected daily increase: $((CHANGE_PER_HOUR * 24))KB"
+        echo "  Projected daily increase: $((CHANGE_PER_HOUR * 24))KB"
     fi
 fi

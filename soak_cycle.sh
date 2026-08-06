@@ -1,3 +1,4 @@
+#!/bin/bash
 # soak_test_somnambulator.sh
 
   echo "Starting DayDreamer memory soak test using Somnambulator..."
@@ -10,11 +11,11 @@
 
 
   # CSV header
-  echo "timestamp,pss_kb,private_dirty_kb,heap_alloc_kb,cycle" > $LOGFILE
+  echo "timestamp,pss_kb,status,cycle" > $LOGFILE
 
   # Function to get memory stats
   get_memory() {
-      $ADB_PATH/adb -s $DEVICE shell dumpsys meminfo $PACKAGE 2>/dev/null | grep -E "TOTAL PSS:" | awk '{print $3}' | tr -d ','
+      $ADB_PATH/adb -s $DEVICE shell dumpsys meminfo $PACKAGE | grep -E "TOTAL PSS:" | awk '{print $3}' | tr -d ','
   }
 
   # Function to start screensaver
@@ -42,6 +43,12 @@
       fi
   }
 
+  # Function to check if the device is still connected to adb
+  check_device_connected() {
+      STATE=$($ADB_PATH/adb -s $DEVICE get-state 2>/dev/null)
+      [ "$STATE" == "device" ]
+  }
+
   # Setup: Ensure DayDreamer is set as default screensaver
   echo "Setting DayDreamer as default screensaver..."
   $ADB_PATH/adb -s $DEVICE shell settings put secure screensaver_components $PACKAGE/.DayDreamerQuoth
@@ -57,21 +64,29 @@
   sleep 5
 
   if check_dream_running; then
-      echo "✅ SUCCESS: DayDreamer launched successfully"
+      echo "SUCCESS: DayDreamer launched successfully"
   else
-      echo "❌ WARNING: DayDreamer not detected, but continuing test..."
+      echo "WARNING: DayDreamer not detected, but continuing test..."
   fi
 
   stop_screensaver
   sleep 3
 
   echo "Starting memory soak test..."
-  #echo "Will run for $(($1 > 0 ? $1 : 100)) cycles"
 
   # Main test loop
-  CYCLES=${2:-1000}  # Default 100 cycles, or pass as argument
+  CYCLES=${2:-1000}  # Default 1000 cycles, or pass as second argument
+  CONSECUTIVE_FAILURES=0
+  MAX_CONSECUTIVE_FAILURES=3
   for i in $(seq 1 $CYCLES); do
       echo "=== Cycle $i/$CYCLES ==="
+
+      # Abort early if the device itself has disconnected, rather than
+      # grinding through the remaining cycles against a dead connection
+      if ! check_device_connected; then
+          echo "ERROR: Device $DEVICE is no longer connected. Aborting soak test at cycle $i/$CYCLES."
+          break
+      fi
 
       # Start screensaver
       start_screensaver
@@ -80,15 +95,22 @@
       # Collect memory stats if service is running
       TIMESTAMP=$(date +%s)
       if check_dream_running; then
+          CONSECUTIVE_FAILURES=0
           MEMORY=$(get_memory)
-          echo "$TIMESTAMP,$MEMORY,,$i" >> $LOGFILE
+          echo "$TIMESTAMP,$MEMORY,OK,$i" >> $LOGFILE
           echo "Memory: ${MEMORY}KB"
 
           # Also log to console with human-readable time
           echo "$(date '+%H:%M:%S') - Cycle $i: ${MEMORY}KB"
       else
+          CONSECUTIVE_FAILURES=$((CONSECUTIVE_FAILURES + 1))
           echo "$TIMESTAMP,0,NOTRUNNING,$i" >> $LOGFILE
-          echo "Service not running"
+          echo "Service not running ($CONSECUTIVE_FAILURES consecutive failures)"
+
+          if [ $CONSECUTIVE_FAILURES -ge $MAX_CONSECUTIVE_FAILURES ]; then
+              echo "ERROR: DayDreamer failed to start $MAX_CONSECUTIVE_FAILURES times in a row. Aborting soak test at cycle $i/$CYCLES."
+              break
+          fi
       fi
 
       # Stop screensaver
@@ -101,7 +123,7 @@
       fi
   done
 
-  echo "✅ Test complete!"
+  echo "Test complete!"
   echo "Results saved to: $LOGFILE"
   echo ""
   echo "Quick analysis:"
@@ -123,10 +145,10 @@
       echo "  Total change:      ${MEMORY_CHANGE}KB"
 
       if [ $MEMORY_CHANGE -gt 5000 ]; then
-          echo "  ⚠️  WARNING: Memory increased by >5MB - possible leak"
+          echo "  WARNING: Memory increased by >5MB - possible leak"
       elif [ $MEMORY_CHANGE -gt 1000 ]; then
-          echo "  ⚠️  CAUTION: Memory increased by >1MB - monitor closely"
+          echo "  CAUTION: Memory increased by >1MB - monitor closely"
       else
-          echo "  ✅ GOOD: Memory change within acceptable range"
+          echo "  GOOD: Memory change within acceptable range"
       fi
   fi
