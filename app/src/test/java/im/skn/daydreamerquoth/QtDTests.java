@@ -14,8 +14,13 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import org.robolectric.shadows.ShadowLog;
 import java.lang.reflect.Method;
+import java.lang.reflect.Field;
 import org.robolectric.Robolectric;
 import org.robolectric.android.controller.ServiceController;
+import android.content.Intent;
+import android.os.BatteryManager;
+import android.widget.ImageView;
+import android.widget.TextView;
 
 @RunWith(RobolectricTestRunner.class)
 public class QtDTests {
@@ -526,5 +531,189 @@ public class QtDTests {
                 fail("Unexpected exception in setQuote: " + e.getCause());
             }
         }
+    }
+
+    // --- setBatteryDetails() icon-selection tests ---
+
+    private void setPrivateField(Object target, String fieldName, Object value) throws Exception {
+        Field field = DayDreamerQuoth.class.getDeclaredField(fieldName);
+        field.setAccessible(true);
+        field.set(target, value);
+    }
+
+    private int getImageResourceId(ImageView imageView) throws Exception {
+        Field field = ImageView.class.getDeclaredField("mResource");
+        field.setAccessible(true);
+        return (int) field.get(imageView);
+    }
+
+    private void invokeSetBatteryDetails(DayDreamerQuoth instance, int status, int batteryPct, Intent batteryStatus) throws Exception {
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("setBatteryDetails", int.class, int.class, Intent.class);
+        method.setAccessible(true);
+        method.invoke(instance, status, batteryPct, batteryStatus);
+    }
+
+    private DayDreamerQuoth createBatteryTestInstance(TextView pctView, ImageView statusImageView, TextView chrgTypeView,
+                                                       boolean showPct, boolean showStatus) throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        setPrivateField(instance, "showBatteryPct", showPct);
+        setPrivateField(instance, "contentBatteryPctView", pctView);
+        setPrivateField(instance, "showBatteryStatus", showStatus);
+        setPrivateField(instance, "batteryStatusImageView", statusImageView);
+        setPrivateField(instance, "batteryChrgTypeTextView", chrgTypeView);
+        return instance;
+    }
+
+    @Test
+    public void testBatteryIcon_DischargingBoundaries() throws Exception {
+        int[][] cases = {
+            {20, R.drawable.ic_battery_20},
+            {21, R.drawable.ic_battery_30},
+            {30, R.drawable.ic_battery_30},
+            {31, R.drawable.ic_battery_50},
+            {50, R.drawable.ic_battery_50},
+            {51, R.drawable.ic_battery_60},
+            {60, R.drawable.ic_battery_60},
+            {61, R.drawable.ic_battery_80},
+            {80, R.drawable.ic_battery_80},
+            {81, R.drawable.ic_battery_90},
+            {90, R.drawable.ic_battery_90},
+            {91, R.drawable.ic_battery_full},
+            {100, R.drawable.ic_battery_full},
+        };
+
+        for (int[] testCase : cases) {
+            int pct = testCase[0];
+            int expectedResId = testCase[1];
+
+            ImageView statusImageView = new ImageView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView chrgTypeView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView pctView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            DayDreamerQuoth instance = createBatteryTestInstance(pctView, statusImageView, chrgTypeView, true, true);
+
+            invokeSetBatteryDetails(instance, BatteryManager.BATTERY_STATUS_DISCHARGING, pct, new Intent());
+
+            assertEquals("Discharging at " + pct + "% should show correct icon",
+                    expectedResId, getImageResourceId(statusImageView));
+        }
+    }
+
+    @Test
+    public void testBatteryIcon_ChargingBoundaries() throws Exception {
+        int[][] cases = {
+            {20, R.drawable.ic_battery_charging_20},
+            {21, R.drawable.ic_battery_charging_30},
+            {30, R.drawable.ic_battery_charging_30},
+            {31, R.drawable.ic_battery_charging_50},
+            {50, R.drawable.ic_battery_charging_50},
+            {51, R.drawable.ic_battery_charging_60},
+            {60, R.drawable.ic_battery_charging_60},
+            {61, R.drawable.ic_battery_charging_80},
+            {80, R.drawable.ic_battery_charging_80},
+            {81, R.drawable.ic_battery_charging_90},
+            {90, R.drawable.ic_battery_charging_90},
+            {91, R.drawable.ic_battery_charging_full},
+            {100, R.drawable.ic_battery_charging_full},
+        };
+
+        for (int[] testCase : cases) {
+            int pct = testCase[0];
+            int expectedResId = testCase[1];
+
+            ImageView statusImageView = new ImageView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView chrgTypeView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView pctView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            DayDreamerQuoth instance = createBatteryTestInstance(pctView, statusImageView, chrgTypeView, true, true);
+
+            Intent batteryIntent = new Intent();
+            batteryIntent.putExtra(BatteryManager.EXTRA_PLUGGED, BatteryManager.BATTERY_PLUGGED_AC);
+
+            invokeSetBatteryDetails(instance, BatteryManager.BATTERY_STATUS_CHARGING, pct, batteryIntent);
+
+            assertEquals("Charging at " + pct + "% should show correct icon",
+                    expectedResId, getImageResourceId(statusImageView));
+        }
+    }
+
+    @Test
+    public void testBatteryChargeType_PluggedSourceMapping() throws Exception {
+        Object[][] cases = {
+            {BatteryManager.BATTERY_PLUGGED_AC, "a"},
+            {BatteryManager.BATTERY_PLUGGED_USB, "u"},
+            {BatteryManager.BATTERY_PLUGGED_WIRELESS, "w"},
+        };
+
+        for (Object[] testCase : cases) {
+            int pluggedType = (Integer) testCase[0];
+            String expectedLetter = (String) testCase[1];
+
+            ImageView statusImageView = new ImageView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView chrgTypeView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView pctView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            DayDreamerQuoth instance = createBatteryTestInstance(pctView, statusImageView, chrgTypeView, true, true);
+
+            Intent batteryIntent = new Intent();
+            batteryIntent.putExtra(BatteryManager.EXTRA_PLUGGED, pluggedType);
+
+            invokeSetBatteryDetails(instance, BatteryManager.BATTERY_STATUS_CHARGING, 50, batteryIntent);
+
+            assertEquals("Plugged type " + pluggedType + " should map to letter '" + expectedLetter + "'",
+                    expectedLetter, chrgTypeView.getText().toString());
+        }
+    }
+
+    @Test
+    public void testBatteryIcon_FullStatus_IgnoresPercentage() throws Exception {
+        int[] percentages = {0, 20, 50, 80, 100};
+        for (int pct : percentages) {
+            ImageView statusImageView = new ImageView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView chrgTypeView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            TextView pctView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+            DayDreamerQuoth instance = createBatteryTestInstance(pctView, statusImageView, chrgTypeView, true, true);
+
+            invokeSetBatteryDetails(instance, BatteryManager.BATTERY_STATUS_FULL, pct, new Intent());
+
+            assertEquals("BATTERY_STATUS_FULL should always show full icon regardless of percentage",
+                    R.drawable.ic_battery_full, getImageResourceId(statusImageView));
+        }
+    }
+
+    @Test
+    public void testBatteryIcon_UnknownStatus() throws Exception {
+        ImageView statusImageView = new ImageView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        TextView chrgTypeView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        TextView pctView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        DayDreamerQuoth instance = createBatteryTestInstance(pctView, statusImageView, chrgTypeView, true, true);
+
+        invokeSetBatteryDetails(instance, BatteryManager.BATTERY_STATUS_UNKNOWN, 50, new Intent());
+
+        assertEquals(R.drawable.ic_battery_unknown, getImageResourceId(statusImageView));
+    }
+
+    @Test
+    public void testBatteryPercentageText_ShowsWhenEnabled() throws Exception {
+        ImageView statusImageView = new ImageView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        TextView chrgTypeView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        TextView pctView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        DayDreamerQuoth instance = createBatteryTestInstance(pctView, statusImageView, chrgTypeView, true, true);
+
+        invokeSetBatteryDetails(instance, BatteryManager.BATTERY_STATUS_DISCHARGING, 42, new Intent());
+
+        assertEquals("42%", pctView.getText().toString());
+    }
+
+    @Test
+    public void testBatteryDetails_GuardClauses_SkipWhenDisabled() throws Exception {
+        ImageView statusImageView = new ImageView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        TextView chrgTypeView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        TextView pctView = new TextView(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        DayDreamerQuoth instance = createBatteryTestInstance(pctView, statusImageView, chrgTypeView, false, false);
+
+        invokeSetBatteryDetails(instance, BatteryManager.BATTERY_STATUS_DISCHARGING, 50, new Intent());
+
+        assertEquals("Percentage view should be untouched when showBatteryPct is false",
+                "", pctView.getText().toString());
+        assertEquals("Charge-type view should be untouched when showBatteryStatus is false",
+                "", chrgTypeView.getText().toString());
     }
 }
