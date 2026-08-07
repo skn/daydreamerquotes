@@ -78,6 +78,11 @@ dependencies {
     // Robolectric
     testImplementation "org.robolectric:robolectric:4.16.1"
     testImplementation 'junit:junit:4.13.2'
+    // Pinned explicitly rather than left to transitive resolution via androidx.preference,
+    // which otherwise resolves to AppCompat 1.1.0 - too old to apply insets correctly under
+    // the edge-to-edge enforcement Android 15+ (targetSdk 35+) forces on the classic ActionBar,
+    // which was cutting off the top preference row on the settings screen.
+    implementation 'androidx.appcompat:appcompat:1.7.0'
     implementation 'androidx.preference:preference:1.2.1'
     testImplementation 'androidx.test:core:1.7.0'
 }
