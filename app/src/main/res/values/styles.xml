@@ -34,4 +34,5 @@
         <item name="android:textSize">16sp</item>
         <item name="android:alpha">0.5</item>
     </style>
+    <style name="Theme.QuothPrefs" parent="Theme.AppCompat.NoActionBar" />
 </resources>

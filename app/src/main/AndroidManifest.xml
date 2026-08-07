@@ -16,7 +16,7 @@
             </intent-filter>
             <meta-data android:name="android.service.dream" android:resource="@xml/dream" />
         </service>
-        <activity android:name="im.skn.daydreamerquoth.QuothPrefs" />
+        <activity android:name="im.skn.daydreamerquoth.QuothPrefs" android:theme="@style/Theme.QuothPrefs" />
         <activity android:name="QuothActivity" android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
