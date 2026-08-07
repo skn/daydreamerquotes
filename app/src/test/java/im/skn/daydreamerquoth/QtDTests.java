@@ -24,6 +24,8 @@ import android.graphics.Typeface;
 import android.os.BatteryManager;
 import android.widget.ImageView;
 import android.widget.TextView;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 
 @RunWith(RobolectricTestRunner.class)
 public class QtDTests {
@@ -931,5 +933,74 @@ public class QtDTests {
                 santanaPair[0], unknownFamilyPair[0]);
         assertSame("An unrecognized font family should resolve to the same light typeface as 'Santana'",
                 santanaPair[1], unknownFamilyPair[1]);
+    }
+
+    // --- QuothPrefs: reading-speed visibility tests ---
+
+    private QuothPrefs.MySettingsFragment createSettingsFragment() {
+        QuothPrefs activity = Robolectric.buildActivity(QuothPrefs.class).create().start().resume().get();
+        activity.getSupportFragmentManager().executePendingTransactions();
+        return (QuothPrefs.MySettingsFragment) activity.getSupportFragmentManager()
+                .findFragmentById(R.id.settings_container);
+    }
+
+    @Test
+    public void testReadingSpeedPreference_HiddenByDefault() {
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+        Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+
+        assertFalse("Reading speed should be hidden for the default fixed-delay preference",
+                readingSpeedPref.isVisible());
+    }
+
+    @Test
+    public void testReadingSpeedPreference_HiddenForFixedMode() throws Exception {
+        SharedPreferences prefs = QuothPrefs.get(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "300000:fixed").commit();
+
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+        Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+
+        assertFalse("Reading speed should be hidden for any fixed-delay choice",
+                readingSpeedPref.isVisible());
+    }
+
+    @Test
+    public void testReadingSpeedPreference_VisibleForSmartMode() throws Exception {
+        SharedPreferences prefs = QuothPrefs.get(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "0:smart").commit();
+
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+        Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+
+        assertTrue("Reading speed should be visible for Smart Timing", readingSpeedPref.isVisible());
+    }
+
+    @Test
+    public void testReadingSpeedPreference_VisibleForHybridMode() throws Exception {
+        SharedPreferences prefs = QuothPrefs.get(androidx.test.core.app.ApplicationProvider.getApplicationContext());
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:hybrid").commit();
+
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+        Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+
+        assertTrue("Reading speed should be visible for Hybrid mode", readingSpeedPref.isVisible());
+    }
+
+    @Test
+    public void testReadingSpeedPreference_TogglesLiveWhenDelayChanges() {
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+        ListPreference delayPref = fragment.findPreference(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES);
+        Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+
+        assertFalse("Should start hidden with the default fixed delay", readingSpeedPref.isVisible());
+
+        delayPref.callChangeListener("0:smart");
+        assertTrue("Should become visible the moment the user picks Smart Timing",
+                readingSpeedPref.isVisible());
+
+        delayPref.callChangeListener("60000:fixed");
+        assertFalse("Should hide again the moment the user picks a fixed delay",
+                readingSpeedPref.isVisible());
     }
 }
