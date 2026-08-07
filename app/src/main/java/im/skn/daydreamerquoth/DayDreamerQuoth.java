@@ -16,10 +16,12 @@ import android.service.dreams.DreamService;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import im.skn.daydreamerquoth.databinding.DreamQuotesBinding;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -661,12 +663,65 @@ public class DayDreamerQuoth extends DreamService {
         handler.postDelayed(showQuoteRunnable, nextDelay);
     }
 
+    /**
+     * Assigns each cached view field from the inflated binding and applies the
+     * resolved typeface/text size. Split out from onAttachedToWindow() so the
+     * actual id-to-field wiring can be exercised directly in a test - inflating
+     * a DreamQuotesBinding doesn't require a real attached Window the way
+     * setContentView()/onAttachedToWindow() itself does under Robolectric.
+     */
+    private void cacheViewReferences(DreamQuotesBinding binding, Typeface regularTypeface,
+                                      Typeface lightTypeface, int quoteTextSize, int authorTextSize) {
+        // All fields below are guaranteed non-null by ViewBinding - dream_quotes.xml
+        // inflation itself would fail if any of these ids were missing, so the
+        // null-checks that used to guard each of these (defending against
+        // findViewById returning null) are gone; they could never actually be hit
+        // once binding succeeded.
+        firstContent = binding.quoteContentFirst;
+        firstContentBodyTextView = binding.quoteBody;
+        firstContentAuthTextView = binding.quoteAuthor;
+        firstContentBodyTextView.setTypeface(regularTypeface);
+        firstContentBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, quoteTextSize);
+        firstContentAuthTextView.setTypeface(lightTypeface);
+        firstContentAuthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, authorTextSize);
+
+        secondContent = binding.quoteContentSecond;
+        secondContentBodyTextView = binding.quoteBodySecond;
+        secondContentAuthTextView = binding.quoteAuthorSecond;
+        secondContentBodyTextView.setTypeface(regularTypeface);
+        secondContentBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, quoteTextSize);
+        secondContentAuthTextView.setTypeface(lightTypeface);
+        secondContentAuthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, authorTextSize);
+
+        contentTimeView = binding.time;
+        contentTimeView.setTypeface(regularTypeface);
+        contentTimeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, authorTextSize - TEXT_SIZE_DIFF_AUTH_TIME);
+
+        contentDateView = binding.date;
+        contentDateView.setTypeface(regularTypeface);
+        contentDateView.setTextSize(TypedValue.COMPLEX_UNIT_SP, authorTextSize - TEXT_SIZE_DIFF_AUTH_TIME);
+
+        contentBatteryStatusView = binding.batteryStatusContent;
+
+        contentBatteryPctView = binding.batteryPct;
+        contentBatteryPctView.setTypeface(regularTypeface);
+        contentBatteryPctView.setTextSize(TypedValue.COMPLEX_UNIT_SP, authorTextSize - 4 * TEXT_SIZE_DIFF_AUTH_TIME);
+
+        batteryChrgTypeTextView = binding.batteryChrgType;
+        batteryChrgTypeTextView.setTypeface(regularTypeface);
+        batteryChrgTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, authorTextSize - 4 * TEXT_SIZE_DIFF_AUTH_TIME);
+
+        // Cache battery status ImageView for setBatteryDetails
+        batteryStatusImageView = binding.batteryStatus;
+    }
+
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
         setInteractive(true);     // Allow touch events
         setScreenBright(true);    // Keep screen bright/awake
         setFullscreen(true);
-        setContentView(R.layout.dream_quotes);
+        DreamQuotesBinding binding = DreamQuotesBinding.inflate(LayoutInflater.from(this));
+        setContentView(binding.getRoot());
         // Get cached typefaces efficiently
         SharedPreferences prefs = QuothPrefs.get(this);
         String txt_size = prefs.getString(QuothPrefs.PREF_TEXT_SIZE, null);
@@ -705,117 +760,51 @@ public class DayDreamerQuoth extends DreamService {
         // Parse the combined timing preference format
         parseTimingPreference();
 
-        // Cache all view references for performance
-        firstContent = findViewById(R.id.quote_content_first);
-        if (firstContent != null) {
-            firstContentBodyTextView = firstContent.findViewById(R.id.quote_body);
-            firstContentAuthTextView = firstContent.findViewById(R.id.quote_author);
-            if (firstContentBodyTextView != null) {
-                firstContentBodyTextView.setTypeface(regularTypeface);
-                firstContentBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, quote_text_size);
-            }
-            if (firstContentAuthTextView != null) {
-                firstContentAuthTextView.setTypeface(lightTypeface);
-                firstContentAuthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size);
-            }
-        }
-
-        secondContent = findViewById(R.id.quote_content_second);
-        if (secondContent != null) {
-            secondContentBodyTextView = secondContent.findViewById(R.id.quote_body);
-            secondContentAuthTextView = secondContent.findViewById(R.id.quote_author);
-            if (secondContentBodyTextView != null) {
-                secondContentBodyTextView.setTypeface(regularTypeface);
-                secondContentBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, quote_text_size);
-            }
-            if (secondContentAuthTextView != null) {
-                secondContentAuthTextView.setTypeface(lightTypeface);
-                secondContentAuthTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size);
-            }
-        }
-
-        contentTimeView = findViewById(R.id.time);
-        if (contentTimeView != null) {
-            contentTimeView.setTypeface(regularTypeface);
-            contentTimeView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
-        }
-
-        contentDateView = findViewById(R.id.date);
-        if (contentDateView != null) {
-            contentDateView.setTypeface(regularTypeface);
-            contentDateView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - TEXT_SIZE_DIFF_AUTH_TIME);
-        }
-
-        contentBatteryStatusView = findViewById(R.id.batteryStatus_content);
-
-        contentBatteryPctView = findViewById(R.id.batteryPct);
-        if (contentBatteryPctView != null) {
-            contentBatteryPctView.setTypeface(regularTypeface);
-            contentBatteryPctView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
-        }
-
-        if (contentBatteryStatusView != null) {
-            batteryChrgTypeTextView = contentBatteryStatusView.findViewById(R.id.batteryChrgType);
-            if (batteryChrgTypeTextView != null) {
-                batteryChrgTypeTextView.setTypeface(regularTypeface);
-                batteryChrgTypeTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, author_text_size - 4*TEXT_SIZE_DIFF_AUTH_TIME);
-            }
-        }
-
-        // Cache battery status ImageView for setBatteryDetails
-        batteryStatusImageView = findViewById(R.id.batteryStatus);
+        cacheViewReferences(binding, regularTypeface, lightTypeface, quote_text_size, author_text_size);
 
         boolean showTime = prefs.getBoolean(QuothPrefs.PREF_SHOW_TIME, true);
-        if (contentTimeView != null) {
-            if (!showTime){
-                contentTimeView.setVisibility(View.GONE);
-            }
-            else {
-                contentTimeView.setVisibility(View.VISIBLE);
-                contentTimeView.setTextColor(0XFFFFFFFF);
-            }
+        if (!showTime){
+            contentTimeView.setVisibility(View.GONE);
+        }
+        else {
+            contentTimeView.setVisibility(View.VISIBLE);
+            contentTimeView.setTextColor(0XFFFFFFFF);
         }
         boolean showDate = prefs.getBoolean(QuothPrefs.PREF_SHOW_DATE, true);
-        if (contentDateView != null) {
-            if (!showDate){
-                contentDateView.setVisibility(View.GONE);
-                if (showTime && contentTimeView != null) {
-                    // If time is shown but not date
-                    RelativeLayout.LayoutParams timeLayoutParams = new RelativeLayout.LayoutParams(
-                            RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-                    // remove alignment to the date since date is not shown
-                    timeLayoutParams.removeRule(RelativeLayout.ABOVE);
-                    // instead align the time text just like the date - center and bottom of layout
-                    timeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-                    timeLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
-                    contentTimeView.setLayoutParams(timeLayoutParams);
-                }
+        if (!showDate){
+            contentDateView.setVisibility(View.GONE);
+            if (showTime) {
+                // If time is shown but not date
+                RelativeLayout.LayoutParams timeLayoutParams = new RelativeLayout.LayoutParams(
+                        RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+                // remove alignment to the date since date is not shown
+                timeLayoutParams.removeRule(RelativeLayout.ABOVE);
+                // instead align the time text just like the date - center and bottom of layout
+                timeLayoutParams.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+                timeLayoutParams.addRule(RelativeLayout.CENTER_HORIZONTAL);
+                contentTimeView.setLayoutParams(timeLayoutParams);
             }
-            else {
-                contentDateView.setVisibility(View.VISIBLE);
-                contentDateView.setTextColor(0XFFFFFFFF);
-            }
+        }
+        else {
+            contentDateView.setVisibility(View.VISIBLE);
+            contentDateView.setTextColor(0XFFFFFFFF);
         }
 
         showBatteryPct = prefs.getBoolean(QuothPrefs.PREF_SHOW_BATTERY_PCT, true);
-        if (contentBatteryPctView != null) {
-            if (!showBatteryPct){
-                contentBatteryPctView.setVisibility(View.GONE);
-            }
-            else {
-                contentBatteryPctView.setVisibility(View.VISIBLE);
-                contentBatteryPctView.setTextColor(0XFFFFFFFF);
-            }
+        if (!showBatteryPct){
+            contentBatteryPctView.setVisibility(View.GONE);
+        }
+        else {
+            contentBatteryPctView.setVisibility(View.VISIBLE);
+            contentBatteryPctView.setTextColor(0XFFFFFFFF);
         }
 
         showBatteryStatus = prefs.getBoolean(QuothPrefs.PREF_SHOW_BATTERY_STATUS, true);
-        if (contentBatteryStatusView != null) {
-            if (!showBatteryStatus){
-                contentBatteryStatusView.setVisibility(View.GONE);
-            }
-            else {
-                contentBatteryStatusView.setVisibility(View.VISIBLE);
-            }
+        if (!showBatteryStatus){
+            contentBatteryStatusView.setVisibility(View.GONE);
+        }
+        else {
+            contentBatteryStatusView.setVisibility(View.VISIBLE);
         }
 
         shortAnimationDuration = DEFAULT_SWITCH_ANIM_DURATION;

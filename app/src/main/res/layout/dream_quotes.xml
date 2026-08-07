@@ -30,13 +30,13 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
         <TextView
-            android:id="@id/quote_body"
+            android:id="@+id/quote_body_second"
             style="@style/QuoteBody"
             />
         <TextView
-            android:id="@id/quote_author"
-            android:layout_below="@id/quote_body"
-            android:layout_alignRight="@id/quote_body"
+            android:id="@+id/quote_author_second"
+            android:layout_below="@id/quote_body_second"
+            android:layout_alignRight="@id/quote_body_second"
             style="@style/QuoteAuthor"
             />
     </RelativeLayout>

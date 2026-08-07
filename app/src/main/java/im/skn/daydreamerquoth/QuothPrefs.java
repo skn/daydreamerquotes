@@ -3,7 +3,6 @@ package im.skn.daydreamerquoth;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
@@ -12,6 +11,7 @@ import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
+import im.skn.daydreamerquoth.databinding.ActivityQuothPrefsBinding;
 
 public class QuothPrefs extends AppCompatActivity {
 
@@ -34,16 +34,16 @@ public class QuothPrefs extends AppCompatActivity {
     @Override
 	public void onCreate(Bundle bundle) {
         super.onCreate(bundle);
-        setContentView(R.layout.activity_quoth_prefs);
-        setSupportActionBar(findViewById(R.id.settings_toolbar));
+        ActivityQuothPrefsBinding binding = ActivityQuothPrefsBinding.inflate(getLayoutInflater());
+        setContentView(binding.getRoot());
+        setSupportActionBar(binding.settingsToolbar);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.settings_container, new MySettingsFragment()).commit();
+                .replace(binding.settingsContainer.getId(), new MySettingsFragment()).commit();
 
         // The Toolbar above reserves its own space in the layout, so it can no
         // longer overlap content the way the classic overlay ActionBar could.
         // The status bar is still edge-to-edge under targetSdk 35+, so pad for it.
-        View root = findViewById(R.id.settings_root);
-        ViewCompat.setOnApplyWindowInsetsListener(root, (v, windowInsets) -> {
+        ViewCompat.setOnApplyWindowInsetsListener(binding.settingsRoot, (v, windowInsets) -> {
             Insets systemBars = windowInsets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return windowInsets;

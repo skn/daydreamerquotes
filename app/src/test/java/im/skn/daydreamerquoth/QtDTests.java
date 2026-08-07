@@ -22,8 +22,11 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Typeface;
 import android.os.BatteryManager;
+import android.view.LayoutInflater;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import im.skn.daydreamerquoth.databinding.DreamQuotesBinding;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
 
@@ -569,6 +572,100 @@ public class QtDTests {
                 fail("Unexpected exception in setQuote: " + e.getCause());
             }
         }
+    }
+
+    @Test
+    public void testSetQuote_AlternatesDistinctlyBetweenFirstAndSecondContent() throws Exception {
+        // Regression test for the dream_quotes.xml ViewBinding migration: quote_body/quote_author
+        // used to be the same duplicate ids reused under both quote_content_first and
+        // quote_content_second, disambiguated only by scoping findViewById() to the right
+        // container. After the migration, quote_content_second's pair was renamed to
+        // quote_body_second/quote_author_second and bound directly - this proves that rename
+        // didn't cross-wire which text views setQuote() actually populates on each call.
+        DayDreamerQuoth instance = createTestInstance();
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+
+        View firstContent = new View(context);
+        View secondContent = new View(context);
+        TextView firstBody = new TextView(context);
+        TextView firstAuth = new TextView(context);
+        TextView secondBody = new TextView(context);
+        TextView secondAuth = new TextView(context);
+
+        setPrivateField(instance, "firstContent", firstContent);
+        setPrivateField(instance, "secondContent", secondContent);
+        setPrivateField(instance, "firstContentBodyTextView", firstBody);
+        setPrivateField(instance, "firstContentAuthTextView", firstAuth);
+        setPrivateField(instance, "secondContentBodyTextView", secondBody);
+        setPrivateField(instance, "secondContentAuthTextView", secondAuth);
+
+        List<String> testQuotes = new java.util.ArrayList<>();
+        testQuotes.add("Know thyself -- Socrates");
+        setPrivateField(instance, "quotes", testQuotes);
+        setPrivateField(instance, "numberOfQuotes", testQuotes.size());
+        setPrivateField(instance, "isQuotesLoaded", true);
+
+        Method setQuoteMethod = DayDreamerQuoth.class.getDeclaredMethod("setQuote");
+        setQuoteMethod.setAccessible(true);
+
+        // First call (animateSecond starts false) should populate the FIRST content only
+        setQuoteMethod.invoke(instance);
+        assertTrue("First call should set the quote text on the first content's body view",
+                firstBody.getText().toString().contains("Know thyself"));
+        assertTrue("First call should set the author text on the first content's author view",
+                firstAuth.getText().toString().contains("Socrates"));
+        assertEquals("First call should leave the second content's body view untouched",
+                "", secondBody.getText().toString());
+        assertEquals("First call should leave the second content's author view untouched",
+                "", secondAuth.getText().toString());
+
+        // Second call should flip to the SECOND content, leaving the first content as last set
+        setQuoteMethod.invoke(instance);
+        assertTrue("Second call should set the quote text on the second content's body view",
+                secondBody.getText().toString().contains("Know thyself"));
+        assertTrue("Second call should set the author text on the second content's author view",
+                secondAuth.getText().toString().contains("Socrates"));
+    }
+
+    @Test
+    public void testCacheViewReferences_WiresCorrectViewsFromBinding() throws Exception {
+        // Regression test for the actual risk in the dream_quotes.xml ViewBinding migration:
+        // quote_body/quote_author (first content) and the renamed quote_body_second/
+        // quote_author_second (second content) must map to the correct fields. Exercises the
+        // real cacheViewReferences() code directly - DreamQuotesBinding.inflate() doesn't need
+        // a real attached Window the way onAttachedToWindow()/setContentView() do (confirmed:
+        // calling onAttachedToWindow() directly under Robolectric throws NPE on getWindow(),
+        // which is why this test goes through the extracted method instead).
+        DayDreamerQuoth instance = createTestInstance();
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        DreamQuotesBinding binding = DreamQuotesBinding.inflate(LayoutInflater.from(context));
+
+        Method cacheMethod = DayDreamerQuoth.class.getDeclaredMethod("cacheViewReferences",
+                DreamQuotesBinding.class, Typeface.class, Typeface.class, int.class, int.class);
+        cacheMethod.setAccessible(true);
+        cacheMethod.invoke(instance, binding, Typeface.DEFAULT, Typeface.DEFAULT, 20, 16);
+
+        TextView firstBody = (TextView) getPrivateField(instance, "firstContentBodyTextView");
+        TextView firstAuth = (TextView) getPrivateField(instance, "firstContentAuthTextView");
+        TextView secondBody = (TextView) getPrivateField(instance, "secondContentBodyTextView");
+        TextView secondAuth = (TextView) getPrivateField(instance, "secondContentAuthTextView");
+        View firstContent = (View) getPrivateField(instance, "firstContent");
+        View secondContent = (View) getPrivateField(instance, "secondContent");
+
+        assertEquals("firstContentBodyTextView should be wired to quote_body, not quote_body_second",
+                R.id.quote_body, firstBody.getId());
+        assertEquals("firstContentAuthTextView should be wired to quote_author, not quote_author_second",
+                R.id.quote_author, firstAuth.getId());
+        assertEquals("secondContentBodyTextView should be wired to the renamed quote_body_second, not quote_body",
+                R.id.quote_body_second, secondBody.getId());
+        assertEquals("secondContentAuthTextView should be wired to the renamed quote_author_second, not quote_author",
+                R.id.quote_author_second, secondAuth.getId());
+        assertEquals(R.id.quote_content_first, firstContent.getId());
+        assertEquals(R.id.quote_content_second, secondContent.getId());
+        assertNotSame("First and second content body views must be genuinely distinct objects",
+                firstBody, secondBody);
+        assertNotSame("First and second content author views must be genuinely distinct objects",
+                firstAuth, secondAuth);
     }
 
     // --- setBatteryDetails() icon-selection tests ---

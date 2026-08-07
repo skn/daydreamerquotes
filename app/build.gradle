@@ -61,6 +61,9 @@ android {
         targetCompatibility JavaVersion.VERSION_11
     }
     namespace = 'im.skn.daydreamerquoth'
+    buildFeatures {
+        viewBinding true
+    }
 }
 
 androidComponents {
