@@ -579,9 +579,10 @@ public class QtDTests {
         // Regression test for the dream_quotes.xml ViewBinding migration: quote_body/quote_author
         // used to be the same duplicate ids reused under both quote_content_first and
         // quote_content_second, disambiguated only by scoping findViewById() to the right
-        // container. After the migration, quote_content_second's pair was renamed to
-        // quote_body_second/quote_author_second and bound directly - this proves that rename
-        // didn't cross-wire which text views setQuote() actually populates on each call.
+        // container. After the migration, the pair was renamed to quote_body_first/
+        // quote_author_first and quote_body_second/quote_author_second and bound directly -
+        // this proves that rename didn't cross-wire which text views setQuote() actually
+        // populates on each call.
         DayDreamerQuoth instance = createTestInstance();
         Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
 
@@ -630,7 +631,7 @@ public class QtDTests {
     @Test
     public void testCacheViewReferences_WiresCorrectViewsFromBinding() throws Exception {
         // Regression test for the actual risk in the dream_quotes.xml ViewBinding migration:
-        // quote_body/quote_author (first content) and the renamed quote_body_second/
+        // quote_body_first/quote_author_first (first content) and quote_body_second/
         // quote_author_second (second content) must map to the correct fields. Exercises the
         // real cacheViewReferences() code directly - DreamQuotesBinding.inflate() doesn't need
         // a real attached Window the way onAttachedToWindow()/setContentView() do (confirmed:
@@ -652,13 +653,13 @@ public class QtDTests {
         View firstContent = (View) getPrivateField(instance, "firstContent");
         View secondContent = (View) getPrivateField(instance, "secondContent");
 
-        assertEquals("firstContentBodyTextView should be wired to quote_body, not quote_body_second",
-                R.id.quote_body, firstBody.getId());
-        assertEquals("firstContentAuthTextView should be wired to quote_author, not quote_author_second",
-                R.id.quote_author, firstAuth.getId());
-        assertEquals("secondContentBodyTextView should be wired to the renamed quote_body_second, not quote_body",
+        assertEquals("firstContentBodyTextView should be wired to quote_body_first, not quote_body_second",
+                R.id.quote_body_first, firstBody.getId());
+        assertEquals("firstContentAuthTextView should be wired to quote_author_first, not quote_author_second",
+                R.id.quote_author_first, firstAuth.getId());
+        assertEquals("secondContentBodyTextView should be wired to quote_body_second, not quote_body_first",
                 R.id.quote_body_second, secondBody.getId());
-        assertEquals("secondContentAuthTextView should be wired to the renamed quote_author_second, not quote_author",
+        assertEquals("secondContentAuthTextView should be wired to quote_author_second, not quote_author_first",
                 R.id.quote_author_second, secondAuth.getId());
         assertEquals(R.id.quote_content_first, firstContent.getId());
         assertEquals(R.id.quote_content_second, secondContent.getId());

@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <item type="id" name="quote_content_first" />
-    <item type="id" name="quote_body" />
-    <item type="id" name="quote_author" />
+    <item type="id" name="quote_body_first" />
+    <item type="id" name="quote_author_first" />
     <item type="id" name="quote_content_second" />
     <item type="id" name="time" />
     <item type="id" name="date" />

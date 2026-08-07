@@ -678,8 +678,8 @@ public class DayDreamerQuoth extends DreamService {
         // findViewById returning null) are gone; they could never actually be hit
         // once binding succeeded.
         firstContent = binding.quoteContentFirst;
-        firstContentBodyTextView = binding.quoteBody;
-        firstContentAuthTextView = binding.quoteAuthor;
+        firstContentBodyTextView = binding.quoteBodyFirst;
+        firstContentAuthTextView = binding.quoteAuthorFirst;
         firstContentBodyTextView.setTypeface(regularTypeface);
         firstContentBodyTextView.setTextSize(TypedValue.COMPLEX_UNIT_SP, quoteTextSize);
         firstContentAuthTextView.setTypeface(lightTypeface);

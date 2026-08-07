@@ -12,13 +12,13 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true">
         <TextView
-            android:id="@id/quote_body"
+            android:id="@id/quote_body_first"
             style="@style/QuoteBody"
             />
         <TextView
-            android:id="@id/quote_author"
-            android:layout_below="@id/quote_body"
-            android:layout_alignRight="@id/quote_body"
+            android:id="@id/quote_author_first"
+            android:layout_below="@id/quote_body_first"
+            android:layout_alignRight="@id/quote_body_first"
             style="@style/QuoteAuthor"
             />
 
