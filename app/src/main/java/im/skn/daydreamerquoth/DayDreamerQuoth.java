@@ -314,11 +314,13 @@ public class DayDreamerQuoth extends DreamService {
         
         // Get user's reading speed preference
         int readingSpeedWPM = getUserReadingSpeed();
-        
-        // Analyze quote complexity
-        int wordCount = getWordCount(quoteText);
-        float complexityMultiplier = calculateComplexityMultiplier(quoteText, wordCount);
-        
+
+        // Analyze quote complexity - split once and reuse for both word count
+        // and the long-word check inside calculateComplexityMultiplier
+        String[] words = splitIntoWords(quoteText);
+        int wordCount = words.length;
+        float complexityMultiplier = calculateComplexityMultiplier(quoteText, words, wordCount);
+
         // Calculate base reading time in milliseconds
         long baseReadingTime = (long) ((wordCount / (float) readingSpeedWPM) * 60 * 1000);
         
@@ -333,25 +335,43 @@ public class DayDreamerQuoth extends DreamService {
     }
     
     /**
+     * Split trimmed text on whitespace runs. Shared by getWordCount() and
+     * calculateComplexityMultiplier() so a quote is only ever tokenized once
+     * per smart-delay calculation. Returns an empty array (not a
+     * single-element array of "") for null/blank input.
+     */
+    private String[] splitIntoWords(String text) {
+        if (text == null) {
+            return new String[0];
+        }
+        String trimmed = text.trim();
+        if (trimmed.isEmpty()) {
+            return new String[0];
+        }
+        return trimmed.split("\\s+");
+    }
+
+    /**
      * Get word count from quote text
      */
     private int getWordCount(String text) {
-        if (text == null || text.trim().isEmpty()) {
-            return 0;
-        }
-        return text.trim().split("\\s+").length;
+        return splitIntoWords(text).length;
     }
-    
+
     /**
      * Calculate complexity multiplier based on various factors
      */
     private float calculateComplexityMultiplier(String quoteText, int wordCount) {
+        if (wordCount == 0) return COMPLEXITY_MULTIPLIER_BASE;
+        return calculateComplexityMultiplier(quoteText, splitIntoWords(quoteText), wordCount);
+    }
+
+    private float calculateComplexityMultiplier(String quoteText, String[] words, int wordCount) {
         float multiplier = COMPLEXITY_MULTIPLIER_BASE;
-        
+
         if (wordCount == 0) return multiplier;
-        
+
         // Factor 1: Long words (7+ characters indicate complex vocabulary)
-        String[] words = quoteText.trim().split("\\s+");
         int longWordCount = 0;
         for (String word : words) {
             // Remove punctuation for length calculation

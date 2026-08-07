@@ -210,6 +210,39 @@ public class QtDTests {
     }
 
     @Test
+    public void testGetWordCount_WhitespaceOnlyString_ReturnsZero() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("getWordCount", String.class);
+        method.setAccessible(true);
+
+        // Guards against the shared split helper treating a blank string like
+        // "".split("\\s+") would (which yields {""}, i.e. 1 "word", not 0)
+        assertEquals(0, (int) method.invoke(instance, "   "));
+        assertEquals(0, (int) method.invoke(instance, "\t\n  "));
+    }
+
+    @Test
+    public void testGetWordCount_IrregularWhitespace_CollapsesRuns() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("getWordCount", String.class);
+        method.setAccessible(true);
+
+        assertEquals(3, (int) method.invoke(instance, "Hello\t\tworld   today\n"));
+    }
+
+    @Test
+    public void testCalculateSmartDelay_WhitespaceOnlyQuote_HitsMinimum() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateSmartDelay", String.class);
+        method.setAccessible(true);
+
+        // End-to-end check that the shared split doesn't leak a phantom word
+        // count into the reading-time calculation for blank-but-non-empty text
+        long delay = (Long) method.invoke(instance, "   ");
+        assertEquals(5000L, delay);
+    }
+
+    @Test
     public void testContainsDialogue_Detection() throws Exception {
         DayDreamerQuoth instance = createTestInstance();
         Method method = DayDreamerQuoth.class.getDeclaredMethod("containsDialogue", String.class);
