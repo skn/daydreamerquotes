@@ -809,6 +809,59 @@ public class QtDTests {
                 120000L, delay);
     }
 
+    // --- calculateNextDelay() mode-dispatch tests ---
+    // parseTimingPreference() now caches the mode instead of calculateNextDelay()
+    // re-reading and re-parsing the preference on every quote cycle; these confirm
+    // the cached-field dispatch still picks the right branch per mode.
+
+    private long invokeCalculateNextDelay(DayDreamerQuoth instance) throws Exception {
+        Method method = DayDreamerQuoth.class.getDeclaredMethod("calculateNextDelay");
+        method.setAccessible(true);
+        return (Long) method.invoke(instance);
+    }
+
+    @Test
+    public void testCalculateNextDelay_FixedMode_ReturnsConfiguredDelay() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+
+        SharedPreferences prefs = QuothPrefs.get(instance);
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "45000:fixed").commit();
+        invokeParseTimingPreference(instance);
+
+        assertEquals("Fixed mode should return the configured delay regardless of quote content",
+                45000L, invokeCalculateNextDelay(instance));
+    }
+
+    @Test
+    public void testCalculateNextDelay_SmartMode_IgnoresConfiguredDelay() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+
+        SharedPreferences prefs = QuothPrefs.get(instance);
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "999000:smart").commit();
+        invokeParseTimingPreference(instance);
+        setPrivateField(instance, "currentQuoteText", "Be yourself.");
+
+        // Same short quote as testCalculateSmartDelay_ShortQuote, which hits the 5s floor -
+        // proves smart mode computes from quote content rather than falling back to the huge base delay
+        assertEquals("Smart mode should compute delay from quote content, not the configured base delay",
+                5000L, invokeCalculateNextDelay(instance));
+    }
+
+    @Test
+    public void testCalculateNextDelay_HybridMode_UsesLongerOfSmartAndBase() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+
+        SharedPreferences prefs = QuothPrefs.get(instance);
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "90000:hybrid").commit();
+        invokeParseTimingPreference(instance);
+        setPrivateField(instance, "currentQuoteText", "Be yourself.");
+
+        // Smart delay for this short quote (5000L) is well below the 90000L base delay,
+        // so hybrid should fall back to the configured base delay
+        assertEquals("Hybrid mode should use the base delay when it exceeds the smart delay",
+                90000L, invokeCalculateNextDelay(instance));
+    }
+
     // --- TypefaceManager tests ---
 
     @Test

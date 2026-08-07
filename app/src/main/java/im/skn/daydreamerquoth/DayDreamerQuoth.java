@@ -145,6 +145,7 @@ public class DayDreamerQuoth extends DreamService {
     private static final float DIALOGUE_PENALTY = 0.1f;       // 10% more time for dialogue
     private boolean animateSecond;
     private long delay;
+    private String timingMode;
     private View firstContent;
     private final Handler handler;
     private View secondContent;
@@ -184,6 +185,7 @@ public class DayDreamerQuoth extends DreamService {
     	super();
         handler = new Handler(Looper.getMainLooper());
         delay = DEFAULT_DELAY;
+        timingMode = "fixed";
         animateSecond = false;
         showQuoteRunnable = this::showQuote;
     }
@@ -421,67 +423,55 @@ public class DayDreamerQuoth extends DreamService {
     }
     
     /**
-     * Parse timing preference and extract delay and mode
+     * Parse timing preference and cache both delay and mode. Called once per
+     * attach (onAttachedToWindow), never mid-cycle - a Dream can't reach the
+     * settings screen while it's running, so the preference can't change
+     * between calls to calculateNextDelay().
      */
     private void parseTimingPreference() {
         SharedPreferences prefs = QuothPrefs.get(this);
         String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:fixed");
-        
+
         // Parse format: "delay:mode" (e.g., "60000:fixed", "0:smart", "300000:hybrid")
         String[] parts = timingPref.split(":");
         if (parts.length == 2) {
             try {
                 delay = Long.parseLong(parts[0]);
-                // Mode will be determined dynamically in calculateNextDelay()
+                timingMode = parts[1];
             } catch (NumberFormatException e) {
                 delay = DEFAULT_DELAY;
+                timingMode = "fixed";
             }
         } else {
-            // Fallback for old preference format
+            // Fallback for old preference format - predates Smart Timing, so it never had a mode
             try {
                 delay = Long.parseLong(timingPref);
             } catch (NumberFormatException e) {
                 delay = DEFAULT_DELAY;
             }
+            timingMode = "fixed";
         }
     }
-    
+
     /**
-     * Calculate next delay based on timing mode preference
+     * Calculate next delay based on the timing mode cached by parseTimingPreference()
      */
     private long calculateNextDelay() {
         if (DEBUG_FAST_QUOTES) {
             return DEBUG_DELAY_QUOTE; // Use fast delay for quick quote iteration testing
         }
-        
-        SharedPreferences prefs = QuothPrefs.get(this);
-        String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:fixed");
-        
-        // Parse format: "delay:mode"
-        String[] parts = timingPref.split(":");
-        if (parts.length != 2) {
-            return delay; // Fallback to basic delay
-        }
-        
-        String mode = parts[1];
-        long baseDelay;
-        try {
-            baseDelay = Long.parseLong(parts[0]);
-        } catch (NumberFormatException e) {
-            return delay; // Fallback to default
-        }
-        
-        switch (mode) {
+
+        switch (timingMode) {
             case "smart":
                 return calculateSmartDelay(currentQuoteText);
-                
+
             case "hybrid":
                 long smartDelay = calculateSmartDelay(currentQuoteText);
-                return Math.max(smartDelay, baseDelay);
-                
+                return Math.max(smartDelay, delay);
+
             case "fixed":
             default:
-                return baseDelay;
+                return delay;
         }
     }
 
