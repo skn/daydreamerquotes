@@ -7,6 +7,8 @@ import android.view.View;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.preference.ListPreference;
+import androidx.preference.Preference;
 import androidx.preference.PreferenceManager;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.preference.PreferenceFragmentCompat;
@@ -48,6 +50,29 @@ public class QuothPrefs extends AppCompatActivity {
         @Override
         public void onCreatePreferences(Bundle savedInstanceState, String rootKey) {
             setPreferencesFromResource(R.xml.dream_settings, rootKey);
+
+            ListPreference delayPref = findPreference(PREF_DELAY_BETWEEN_QUOTES);
+            Preference readingSpeedPref = findPreference(PREF_READING_SPEED);
+            if (delayPref == null || readingSpeedPref == null) {
+                return;
+            }
+
+            readingSpeedPref.setVisible(usesReadingSpeed(delayPref.getValue()));
+            delayPref.setOnPreferenceChangeListener((preference, newValue) -> {
+                readingSpeedPref.setVisible(usesReadingSpeed((String) newValue));
+                return true;
+            });
+        }
+
+        // Reading speed only affects the "smart"/"hybrid" timing modes (see
+        // DayDreamerQuoth.calculateNextDelay) - a "fixed" delay ignores it entirely,
+        // so hide the preference rather than leave a setting that does nothing.
+        private boolean usesReadingSpeed(String timingPref) {
+            if (timingPref == null) {
+                return false;
+            }
+            String[] parts = timingPref.split(":");
+            return parts.length == 2 && ("smart".equals(parts[1]) || "hybrid".equals(parts[1]));
         }
     }
 }
