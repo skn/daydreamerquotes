@@ -669,9 +669,8 @@ public class DayDreamerQuoth extends DreamService {
         setContentView(R.layout.dream_quotes);
         // Get cached typefaces efficiently
         SharedPreferences prefs = QuothPrefs.get(this);
-        String delay_txt = prefs.getString("PREF_DELAY_BETWEEN_QUOTES", null);
-        String txt_size = prefs.getString("PREF_TEXT_SIZE", null);
-        String font_family = prefs.getString("PREF_FONT_FAMILY", null);
+        String txt_size = prefs.getString(QuothPrefs.PREF_TEXT_SIZE, null);
+        String font_family = prefs.getString(QuothPrefs.PREF_FONT_FAMILY, null);
         
         // Use TypefaceManager to get cached typefaces
         TypefaceManager typefaceManager = TypefaceManager.getInstance();
@@ -766,7 +765,7 @@ public class DayDreamerQuoth extends DreamService {
         // Cache battery status ImageView for setBatteryDetails
         batteryStatusImageView = findViewById(R.id.batteryStatus);
 
-        boolean showTime = prefs.getBoolean("PREF_SHOW_TIME", true);
+        boolean showTime = prefs.getBoolean(QuothPrefs.PREF_SHOW_TIME, true);
         if (contentTimeView != null) {
             if (!showTime){
                 contentTimeView.setVisibility(View.GONE);
@@ -776,7 +775,7 @@ public class DayDreamerQuoth extends DreamService {
                 contentTimeView.setTextColor(0XFFFFFFFF);
             }
         }
-        boolean showDate = prefs.getBoolean("PREF_SHOW_DATE", true);
+        boolean showDate = prefs.getBoolean(QuothPrefs.PREF_SHOW_DATE, true);
         if (contentDateView != null) {
             if (!showDate){
                 contentDateView.setVisibility(View.GONE);
@@ -798,7 +797,7 @@ public class DayDreamerQuoth extends DreamService {
             }
         }
 
-        showBatteryPct = prefs.getBoolean("PREF_SHOW_BATTERY_PCT", true);
+        showBatteryPct = prefs.getBoolean(QuothPrefs.PREF_SHOW_BATTERY_PCT, true);
         if (contentBatteryPctView != null) {
             if (!showBatteryPct){
                 contentBatteryPctView.setVisibility(View.GONE);
@@ -809,7 +808,7 @@ public class DayDreamerQuoth extends DreamService {
             }
         }
 
-        showBatteryStatus = prefs.getBoolean("PREF_SHOW_BATTERY_STATUS", true);
+        showBatteryStatus = prefs.getBoolean(QuothPrefs.PREF_SHOW_BATTERY_STATUS, true);
         if (contentBatteryStatusView != null) {
             if (!showBatteryStatus){
                 contentBatteryStatusView.setVisibility(View.GONE);

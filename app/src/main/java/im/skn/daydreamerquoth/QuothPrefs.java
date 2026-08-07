@@ -19,6 +19,10 @@ public class QuothPrefs extends AppCompatActivity {
     public static final String PREF_TEXT_SIZE = "PREF_TEXT_SIZE";
     public static final String PREF_FONT_FAMILY = "PREF_FONT_FAMILY";
     public static final String PREF_READING_SPEED = "PREF_READING_SPEED";
+    public static final String PREF_SHOW_TIME = "PREF_SHOW_TIME";
+    public static final String PREF_SHOW_DATE = "PREF_SHOW_DATE";
+    public static final String PREF_SHOW_BATTERY_PCT = "PREF_SHOW_BATTERY_PCT";
+    public static final String PREF_SHOW_BATTERY_STATUS = "PREF_SHOW_BATTERY_STATUS";
 
     public QuothPrefs() {
 

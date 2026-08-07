@@ -1003,4 +1003,30 @@ public class QtDTests {
         assertFalse("Should hide again the moment the user picks a fixed delay",
                 readingSpeedPref.isVisible());
     }
+
+    @Test
+    public void testPreferenceKeys_MatchXmlDeclarations() {
+        // Guards against QuothPrefs's key constants drifting out of sync with
+        // dream_settings.xml's android:key values - a mismatch wouldn't crash,
+        // it would just silently stop reading/writing the affected preference
+        // and revert it to its default.
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+
+        assertNotNull("PREF_DELAY_BETWEEN_QUOTES should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES));
+        assertNotNull("PREF_READING_SPEED should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_READING_SPEED));
+        assertNotNull("PREF_FONT_FAMILY should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_FONT_FAMILY));
+        assertNotNull("PREF_TEXT_SIZE should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_TEXT_SIZE));
+        assertNotNull("PREF_SHOW_TIME should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_SHOW_TIME));
+        assertNotNull("PREF_SHOW_DATE should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_SHOW_DATE));
+        assertNotNull("PREF_SHOW_BATTERY_PCT should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_SHOW_BATTERY_PCT));
+        assertNotNull("PREF_SHOW_BATTERY_STATUS should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_SHOW_BATTERY_STATUS));
+    }
 }
