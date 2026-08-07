@@ -432,7 +432,7 @@ public class DayDreamerQuoth extends DreamService {
      */
     private void parseTimingPreference() {
         SharedPreferences prefs = QuothPrefs.get(this);
-        String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:fixed");
+        String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "0:smart");
 
         // Parse format: "delay:mode" (e.g., "60000:fixed", "0:smart", "300000:hybrid")
         String[] parts = timingPref.split(":");

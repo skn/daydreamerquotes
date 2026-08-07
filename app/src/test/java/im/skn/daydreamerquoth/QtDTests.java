@@ -1043,11 +1043,13 @@ public class QtDTests {
     }
 
     @Test
-    public void testReadingSpeedPreference_HiddenByDefault() {
+    public void testReadingSpeedPreference_VisibleByDefault() {
+        // The default PREF_DELAY_BETWEEN_QUOTES is Smart Timing ("0:smart"), so a
+        // fresh install (no persisted preference) should show reading speed already.
         QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
         Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
 
-        assertFalse("Reading speed should be hidden for the default fixed-delay preference",
+        assertTrue("Reading speed should be visible for the default Smart Timing preference",
                 readingSpeedPref.isVisible());
     }
 
@@ -1091,14 +1093,14 @@ public class QtDTests {
         ListPreference delayPref = fragment.findPreference(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES);
         Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
 
-        assertFalse("Should start hidden with the default fixed delay", readingSpeedPref.isVisible());
-
-        delayPref.callChangeListener("0:smart");
-        assertTrue("Should become visible the moment the user picks Smart Timing",
-                readingSpeedPref.isVisible());
+        assertTrue("Should start visible with the default Smart Timing delay", readingSpeedPref.isVisible());
 
         delayPref.callChangeListener("60000:fixed");
-        assertFalse("Should hide again the moment the user picks a fixed delay",
+        assertFalse("Should hide the moment the user picks a fixed delay",
+                readingSpeedPref.isVisible());
+
+        delayPref.callChangeListener("0:smart");
+        assertTrue("Should become visible again the moment the user picks Smart Timing",
                 readingSpeedPref.isVisible());
     }
 

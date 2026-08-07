@@ -6,7 +6,7 @@
         android:title="Delay between quotes"
         android:key="PREF_DELAY_BETWEEN_QUOTES"
         android:summary="%s"
-        android:defaultValue="60000:fixed"
+        android:defaultValue="0:smart"
         android:dialogTitle="Delay"
         android:entryValues="@array/array_delay_values" />
     <ListPreference
