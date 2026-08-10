@@ -428,31 +428,16 @@ public class DayDreamerQuoth extends DreamService {
      * Parse timing preference and cache both delay and mode. Called once per
      * attach (onAttachedToWindow), never mid-cycle - a Dream can't reach the
      * settings screen while it's running, so the preference can't change
-     * between calls to calculateNextDelay().
+     * between calls to calculateNextDelay(). Migrates any pre-slider
+     * PREF_DELAY_BETWEEN_QUOTES value the first time this runs, since most
+     * users never open QuothPrefs to trigger that migration themselves.
      */
     private void parseTimingPreference() {
+        QuothPrefs.migrateLegacyDelayPreferenceIfNeeded(this);
         SharedPreferences prefs = QuothPrefs.get(this);
-        String timingPref = prefs.getString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "0:smart");
-
-        // Parse format: "delay:mode" (e.g., "60000:fixed", "0:smart", "300000:hybrid")
-        String[] parts = timingPref.split(":");
-        if (parts.length == 2) {
-            try {
-                delay = Long.parseLong(parts[0]);
-                timingMode = parts[1];
-            } catch (NumberFormatException e) {
-                delay = DEFAULT_DELAY;
-                timingMode = "fixed";
-            }
-        } else {
-            // Fallback for old preference format - predates Smart Timing, so it never had a mode
-            try {
-                delay = Long.parseLong(timingPref);
-            } catch (NumberFormatException e) {
-                delay = DEFAULT_DELAY;
-            }
-            timingMode = "fixed";
-        }
+        timingMode = prefs.getString(QuothPrefs.PREF_DELAY_MODE, "smart");
+        int seconds = prefs.getInt(QuothPrefs.PREF_DELAY_SECONDS, QuothPrefs.DEFAULT_DELAY_SECONDS);
+        delay = seconds * 1000L;
     }
 
     /**

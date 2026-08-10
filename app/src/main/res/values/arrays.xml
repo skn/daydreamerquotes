@@ -1,20 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string-array name="array_delay_names">
-        <item>1 minute (Fixed)</item>
-        <item>2 minutes (Fixed)</item>
-        <item>5 minutes (Fixed)</item>
-        <item>Smart Timing (Adaptive)</item>
-        <item>Smart + 1 min minimum (Hybrid)</item>
-        <item>Smart + 2 min minimum (Hybrid)</item>
+    <string-array name="array_delay_mode_names">
+        <item>Fixed</item>
+        <item>Adaptive Timing</item>
+        <item>Hybrid (Adaptive + minimum)</item>
     </string-array>
-    <string-array name="array_delay_values">
-        <item>60000:fixed</item>
-        <item>120000:fixed</item>
-        <item>300000:fixed</item>
-        <item>0:smart</item>
-        <item>60000:hybrid</item>
-        <item>120000:hybrid</item>
+    <string-array name="array_delay_mode_values">
+        <item>fixed</item>
+        <item>smart</item>
+        <item>hybrid</item>
     </string-array>
     <string-array name="array_text_size_names">
         <item>Tiny</item>

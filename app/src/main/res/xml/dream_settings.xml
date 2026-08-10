@@ -1,17 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
 <PreferenceScreen
-  xmlns:android="http://schemas.android.com/apk/res/android">
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto">
     <ListPreference
-        android:entries="@array/array_delay_names"
+        android:entries="@array/array_delay_mode_names"
         android:title="Delay between quotes"
-        android:key="PREF_DELAY_BETWEEN_QUOTES"
+        android:key="PREF_DELAY_MODE"
         android:summary="%s"
-        android:defaultValue="0:smart"
-        android:dialogTitle="Delay"
-        android:entryValues="@array/array_delay_values" />
+        android:defaultValue="smart"
+        android:dialogTitle="Delay mode"
+        android:entryValues="@array/array_delay_mode_values" />
+    <SeekBarPreference
+        android:key="PREF_DELAY_SECONDS"
+        android:title="Delay length"
+        android:summary="Length in seconds (Fixed delay, or Hybrid minimum)"
+        android:defaultValue="60"
+        android:max="300"
+        app:min="30"
+        app:seekBarIncrement="30"
+        app:showSeekBarValue="true" />
     <ListPreference
         android:entries="@array/array_reading_speed_names"
-        android:title="Reading speed (for Smart timing)"
+        android:title="Reading speed (for Adaptive timing)"
         android:key="PREF_READING_SPEED"
         android:summary="%s"
         android:defaultValue="200"

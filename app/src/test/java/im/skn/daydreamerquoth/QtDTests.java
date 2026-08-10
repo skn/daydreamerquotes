@@ -29,6 +29,7 @@ import android.widget.TextView;
 import im.skn.daydreamerquoth.databinding.DreamQuotesBinding;
 import androidx.preference.ListPreference;
 import androidx.preference.Preference;
+import androidx.preference.SeekBarPreference;
 
 @RunWith(RobolectricTestRunner.class)
 public class QtDTests {
@@ -853,7 +854,9 @@ public class QtDTests {
                 "", chrgTypeView.getText().toString());
     }
 
-    // --- parseTimingPreference() legacy-format tests ---
+    // --- migrateLegacyDelayPreferenceIfNeeded() tests ---
+    // The old single "<delayMs>:<mode>" string is only read once, to seed the
+    // new PREF_DELAY_MODE / PREF_DELAY_SECONDS pair for upgrading installs.
 
     private Object getPrivateField(Object target, String fieldName) throws Exception {
         Field field = DayDreamerQuoth.class.getDeclaredField(fieldName);
@@ -867,46 +870,124 @@ public class QtDTests {
         method.invoke(instance);
     }
 
-    @Test
-    public void testParseTimingPreference_LegacyFormat_BareNumber() throws Exception {
-        DayDreamerQuoth instance = createTestInstance();
-
-        SharedPreferences prefs = QuothPrefs.get(instance);
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "45000").commit();
-
-        invokeParseTimingPreference(instance);
-
-        long delay = (Long) getPrivateField(instance, "delay");
-        assertEquals("Old (pre-Smart-Timing) bare-number preference should still parse correctly",
-                45000L, delay);
+    private void invokeMigration(Context context) throws Exception {
+        Method method = QuothPrefs.class.getDeclaredMethod("migrateLegacyDelayPreferenceIfNeeded", Context.class);
+        method.setAccessible(true);
+        method.invoke(null, context);
     }
 
     @Test
-    public void testParseTimingPreference_LegacyFormat_MalformedFallsBackToDefault() throws Exception {
-        DayDreamerQuoth instance = createTestInstance();
+    public void testMigration_FreshInstall_DefaultsToSmart() throws Exception {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
 
-        SharedPreferences prefs = QuothPrefs.get(instance);
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "not_a_number").commit();
+        invokeMigration(context);
 
-        invokeParseTimingPreference(instance);
-
-        long delay = (Long) getPrivateField(instance, "delay");
-        assertEquals("Malformed legacy preference value should fall back to the default delay",
-                60000L, delay);
+        SharedPreferences prefs = QuothPrefs.get(context);
+        assertEquals("Fresh install with no legacy value should migrate straight to Adaptive Timing",
+                "smart", prefs.getString(QuothPrefs.PREF_DELAY_MODE, null));
+        assertEquals(60, prefs.getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
     }
 
     @Test
-    public void testParseTimingPreference_CurrentFormat_StillWorks() throws Exception {
-        DayDreamerQuoth instance = createTestInstance();
+    public void testMigration_LegacyBareNumber_BecomesFixedMode() throws Exception {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "90000").commit();
 
+        invokeMigration(context);
+
+        SharedPreferences prefs = QuothPrefs.get(context);
+        assertEquals("Old bare-number preference predates Adaptive Timing, so it always means fixed",
+                "fixed", prefs.getString(QuothPrefs.PREF_DELAY_MODE, null));
+        assertEquals(90, prefs.getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
+    }
+
+    @Test
+    public void testMigration_LegacyCombinedFormat_PreservesMode() throws Exception {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "120000:hybrid").commit();
+
+        invokeMigration(context);
+
+        SharedPreferences prefs = QuothPrefs.get(context);
+        assertEquals("hybrid", prefs.getString(QuothPrefs.PREF_DELAY_MODE, null));
+        assertEquals(120, prefs.getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
+    }
+
+    @Test
+    public void testMigration_LegacyMalformed_FallsBackToDefault() throws Exception {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "not_a_number").commit();
+
+        invokeMigration(context);
+
+        SharedPreferences prefs = QuothPrefs.get(context);
+        assertEquals("fixed", prefs.getString(QuothPrefs.PREF_DELAY_MODE, null));
+        assertEquals(60, prefs.getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
+    }
+
+    @Test
+    public void testMigration_RoundsToNearestSliderStep() throws Exception {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        // 45s doesn't land on a 30s boundary - the new slider only stores 30s multiples
+        QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "45000:fixed").commit();
+
+        invokeMigration(context);
+
+        assertEquals("A legacy value between two slider steps should round to the nearest one",
+                60, QuothPrefs.get(context).getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
+    }
+
+    @Test
+    public void testMigration_ClampsAboveSliderMaximum() throws Exception {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "999000:hybrid").commit();
+
+        invokeMigration(context);
+
+        assertEquals("A legacy value above the slider's 5-minute ceiling should clamp to it",
+                300, QuothPrefs.get(context).getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
+    }
+
+    @Test
+    public void testMigration_IsIdempotent_DoesNotOverwriteUserChange() throws Exception {
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:fixed").commit();
+        invokeMigration(context);
+
+        // Simulate the user changing the slider after migration already ran once
+        QuothPrefs.get(context).edit().putInt(QuothPrefs.PREF_DELAY_SECONDS, 150).commit();
+
+        invokeMigration(context);
+
+        assertEquals("A second migration attempt must not clobber a value the user has since changed",
+                150, QuothPrefs.get(context).getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
+    }
+
+    @Test
+    public void testParseTimingPreference_MigratesLegacyValueThenReadsIt() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
         SharedPreferences prefs = QuothPrefs.get(instance);
         prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "120000:hybrid").commit();
 
         invokeParseTimingPreference(instance);
 
         long delay = (Long) getPrivateField(instance, "delay");
-        assertEquals("Current 'delay:mode' format should still parse the delay portion correctly",
+        String timingMode = (String) getPrivateField(instance, "timingMode");
+        assertEquals("parseTimingPreference should migrate the legacy value and read it back via the new keys",
                 120000L, delay);
+        assertEquals("hybrid", timingMode);
+    }
+
+    @Test
+    public void testParseTimingPreference_DirectRead_SkipsMigrationWhenNewKeysPresent() throws Exception {
+        DayDreamerQuoth instance = createTestInstance();
+        SharedPreferences prefs = QuothPrefs.get(instance);
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_MODE, "fixed").putInt(QuothPrefs.PREF_DELAY_SECONDS, 90).commit();
+
+        invokeParseTimingPreference(instance);
+
+        long delay = (Long) getPrivateField(instance, "delay");
+        assertEquals(90000L, delay);
     }
 
     // --- calculateNextDelay() mode-dispatch tests ---
@@ -925,7 +1006,7 @@ public class QtDTests {
         DayDreamerQuoth instance = createTestInstance();
 
         SharedPreferences prefs = QuothPrefs.get(instance);
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "45000:fixed").commit();
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_MODE, "fixed").putInt(QuothPrefs.PREF_DELAY_SECONDS, 45).commit();
         invokeParseTimingPreference(instance);
 
         assertEquals("Fixed mode should return the configured delay regardless of quote content",
@@ -937,7 +1018,7 @@ public class QtDTests {
         DayDreamerQuoth instance = createTestInstance();
 
         SharedPreferences prefs = QuothPrefs.get(instance);
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "999000:smart").commit();
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_MODE, "smart").putInt(QuothPrefs.PREF_DELAY_SECONDS, 270).commit();
         invokeParseTimingPreference(instance);
         setPrivateField(instance, "currentQuoteText", "Be yourself.");
 
@@ -952,7 +1033,7 @@ public class QtDTests {
         DayDreamerQuoth instance = createTestInstance();
 
         SharedPreferences prefs = QuothPrefs.get(instance);
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "90000:hybrid").commit();
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_MODE, "hybrid").putInt(QuothPrefs.PREF_DELAY_SECONDS, 90).commit();
         invokeParseTimingPreference(instance);
         setPrivateField(instance, "currentQuoteText", "Be yourself.");
 
@@ -1044,64 +1125,94 @@ public class QtDTests {
 
     @Test
     public void testReadingSpeedPreference_VisibleByDefault() {
-        // The default PREF_DELAY_BETWEEN_QUOTES is Smart Timing ("0:smart"), so a
-        // fresh install (no persisted preference) should show reading speed already.
+        // The default PREF_DELAY_MODE is Adaptive Timing ("smart"), so a fresh
+        // install (no persisted preference) should show reading speed already.
         QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
         Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
 
-        assertTrue("Reading speed should be visible for the default Smart Timing preference",
+        assertTrue("Reading speed should be visible for the default Adaptive Timing preference",
                 readingSpeedPref.isVisible());
+    }
+
+    @Test
+    public void testDelaySecondsPreference_HiddenByDefault() {
+        // Adaptive Timing (the default) ignores the seconds slider entirely.
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+        Preference delaySecondsPref = fragment.findPreference(QuothPrefs.PREF_DELAY_SECONDS);
+
+        assertFalse("Delay slider should be hidden for the default Adaptive Timing mode",
+                delaySecondsPref.isVisible());
     }
 
     @Test
     public void testReadingSpeedPreference_HiddenForFixedMode() throws Exception {
         SharedPreferences prefs = QuothPrefs.get(androidx.test.core.app.ApplicationProvider.getApplicationContext());
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "300000:fixed").commit();
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_MODE, "fixed").commit();
 
         QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
         Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+        Preference delaySecondsPref = fragment.findPreference(QuothPrefs.PREF_DELAY_SECONDS);
 
-        assertFalse("Reading speed should be hidden for any fixed-delay choice",
+        assertFalse("Reading speed should be hidden for Fixed mode",
                 readingSpeedPref.isVisible());
+        assertTrue("Delay slider should be visible for Fixed mode", delaySecondsPref.isVisible());
     }
 
     @Test
     public void testReadingSpeedPreference_VisibleForSmartMode() throws Exception {
         SharedPreferences prefs = QuothPrefs.get(androidx.test.core.app.ApplicationProvider.getApplicationContext());
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "0:smart").commit();
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_MODE, "smart").commit();
 
         QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
         Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
 
-        assertTrue("Reading speed should be visible for Smart Timing", readingSpeedPref.isVisible());
+        assertTrue("Reading speed should be visible for Adaptive Timing", readingSpeedPref.isVisible());
     }
 
     @Test
     public void testReadingSpeedPreference_VisibleForHybridMode() throws Exception {
         SharedPreferences prefs = QuothPrefs.get(androidx.test.core.app.ApplicationProvider.getApplicationContext());
-        prefs.edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "60000:hybrid").commit();
+        prefs.edit().putString(QuothPrefs.PREF_DELAY_MODE, "hybrid").commit();
 
         QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
         Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+        Preference delaySecondsPref = fragment.findPreference(QuothPrefs.PREF_DELAY_SECONDS);
 
         assertTrue("Reading speed should be visible for Hybrid mode", readingSpeedPref.isVisible());
+        assertTrue("Delay slider (as the minimum) should be visible for Hybrid mode",
+                delaySecondsPref.isVisible());
     }
 
     @Test
-    public void testReadingSpeedPreference_TogglesLiveWhenDelayChanges() {
+    public void testDelayModePreference_TogglesDependentsLiveWhenModeChanges() {
         QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
-        ListPreference delayPref = fragment.findPreference(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES);
+        ListPreference delayModePref = fragment.findPreference(QuothPrefs.PREF_DELAY_MODE);
         Preference readingSpeedPref = fragment.findPreference(QuothPrefs.PREF_READING_SPEED);
+        Preference delaySecondsPref = fragment.findPreference(QuothPrefs.PREF_DELAY_SECONDS);
 
-        assertTrue("Should start visible with the default Smart Timing delay", readingSpeedPref.isVisible());
+        assertTrue("Should start visible with the default Adaptive Timing mode", readingSpeedPref.isVisible());
+        assertFalse("Slider should start hidden with the default Adaptive Timing mode",
+                delaySecondsPref.isVisible());
 
-        delayPref.callChangeListener("60000:fixed");
-        assertFalse("Should hide the moment the user picks a fixed delay",
+        delayModePref.callChangeListener("fixed");
+        assertFalse("Reading speed should hide the moment the user picks Fixed",
                 readingSpeedPref.isVisible());
+        assertTrue("Slider should show the moment the user picks Fixed", delaySecondsPref.isVisible());
 
-        delayPref.callChangeListener("0:smart");
-        assertTrue("Should become visible again the moment the user picks Smart Timing",
+        delayModePref.callChangeListener("smart");
+        assertTrue("Reading speed should become visible again for Adaptive Timing",
                 readingSpeedPref.isVisible());
+        assertFalse("Slider should hide again for Adaptive Timing", delaySecondsPref.isVisible());
+    }
+
+    @Test
+    public void testDelaySecondsPreference_BoundsMatchXml() {
+        QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
+        SeekBarPreference delaySecondsPref = fragment.findPreference(QuothPrefs.PREF_DELAY_SECONDS);
+
+        assertEquals("Slider minimum should match the documented 30s floor", 30, delaySecondsPref.getMin());
+        assertEquals("Slider maximum should match the documented 5-minute ceiling", 300, delaySecondsPref.getMax());
+        assertEquals("Slider increment should be 30 seconds", 30, delaySecondsPref.getSeekBarIncrement());
     }
 
     @Test
@@ -1112,8 +1223,10 @@ public class QtDTests {
         // and revert it to its default.
         QuothPrefs.MySettingsFragment fragment = createSettingsFragment();
 
-        assertNotNull("PREF_DELAY_BETWEEN_QUOTES should match its XML preference key",
-                fragment.findPreference(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES));
+        assertNotNull("PREF_DELAY_MODE should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_DELAY_MODE));
+        assertNotNull("PREF_DELAY_SECONDS should match its XML preference key",
+                fragment.findPreference(QuothPrefs.PREF_DELAY_SECONDS));
         assertNotNull("PREF_READING_SPEED should match its XML preference key",
                 fragment.findPreference(QuothPrefs.PREF_READING_SPEED));
         assertNotNull("PREF_FONT_FAMILY should match its XML preference key",
