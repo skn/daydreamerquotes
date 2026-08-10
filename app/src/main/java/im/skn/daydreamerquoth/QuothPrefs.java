@@ -86,9 +86,17 @@ public class QuothPrefs extends AppCompatActivity {
             mode = "fixed";
         }
 
+        // A legacy delay of 0 is the "0:smart" sentinel (Smart Timing ignored the
+        // ms slot entirely) rather than a real fixed-delay choice - fall back to
+        // the same default a fresh install gets instead of clamping it up to the
+        // slider's floor, which would silently invent an unchosen 30s value.
+        int seconds = delayMs == 0
+                ? DEFAULT_DELAY_SECONDS
+                : clampToSliderRange(Math.round(delayMs / 1000f));
+
         prefs.edit()
                 .putString(PREF_DELAY_MODE, mode)
-                .putInt(PREF_DELAY_SECONDS, clampToSliderRange(Math.round(delayMs / 1000f)))
+                .putInt(PREF_DELAY_SECONDS, seconds)
                 .apply();
     }
 

@@ -914,6 +914,23 @@ public class QtDTests {
     }
 
     @Test
+    public void testMigration_LegacySmartSentinel_UsesDefaultNotFloor() throws Exception {
+        // "0:smart" was the fresh-install default written before this slider existed -
+        // the 0 was a sentinel (Smart Timing ignores the ms slot entirely), not a real
+        // fixed-delay choice, so it must migrate to the same default a fresh install
+        // gets rather than being clamped up to the slider's 30s floor.
+        Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
+        QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "0:smart").commit();
+
+        invokeMigration(context);
+
+        SharedPreferences prefs = QuothPrefs.get(context);
+        assertEquals("smart", prefs.getString(QuothPrefs.PREF_DELAY_MODE, null));
+        assertEquals("Should match the fresh-install default, not the slider floor",
+                QuothPrefs.DEFAULT_DELAY_SECONDS, prefs.getInt(QuothPrefs.PREF_DELAY_SECONDS, -1));
+    }
+
+    @Test
     public void testMigration_LegacyMalformed_FallsBackToDefault() throws Exception {
         Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
         QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "not_a_number").commit();
@@ -928,7 +945,8 @@ public class QtDTests {
     @Test
     public void testMigration_RoundsToNearestSliderStep() throws Exception {
         Context context = androidx.test.core.app.ApplicationProvider.getApplicationContext();
-        // 45s doesn't land on a 30s boundary - the new slider only stores 30s multiples
+        // 45s doesn't land on a 30s boundary - migration rounds legacy values onto
+        // one anyway, even though the live slider itself allows any value via touch
         QuothPrefs.get(context).edit().putString(QuothPrefs.PREF_DELAY_BETWEEN_QUOTES, "45000:fixed").commit();
 
         invokeMigration(context);
@@ -1212,7 +1230,9 @@ public class QtDTests {
 
         assertEquals("Slider minimum should match the documented 30s floor", 30, delaySecondsPref.getMin());
         assertEquals("Slider maximum should match the documented 5-minute ceiling", 300, delaySecondsPref.getMax());
-        assertEquals("Slider increment should be 30 seconds", 30, delaySecondsPref.getSeekBarIncrement());
+        // Only governs keyboard/D-pad step size, not touch-drag - see CLAUDE.md's
+        // "Granularity is intentionally split by input method" for why that's kept.
+        assertEquals("Keyboard/D-pad increment should be 30 seconds", 30, delaySecondsPref.getSeekBarIncrement());
     }
 
     @Test
