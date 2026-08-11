@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Debug-build-only override: exports QuothPrefs so it can be launched directly
+  via `adb shell am start` (the main manifest leaves it non-exported - it's
+  normally only reachable via the system Dream picker's "Customize" button).
+  Needed for generate_store_screenshots.sh to capture the settings screen
+  without root, which the available Play Store-image emulators don't grant.
+  Does not affect the release manifest, which merges independently.
+-->
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <application>
+        <activity android:name="im.skn.daydreamerquoth.QuothPrefs" android:exported="true" />
+    </application>
+</manifest>
